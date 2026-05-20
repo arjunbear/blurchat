@@ -1,10 +1,7 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals"
-    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
@@ -16,9 +13,7 @@
     {
       "plugin": "@nx/js/typescript",
       "options": {
-        "typecheck": {
-          "targetName": "typecheck"
-        },
+        "typecheck": { "targetName": "typecheck" },
         "build": {
           "targetName": "build",
           "configName": "tsconfig.lib.json",
@@ -38,12 +33,8 @@
         "serveStaticTargetName": "serve-static"
       }
     },
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    }
+    { "plugin": "@nx/eslint/plugin", "options": { "targetName": "lint" } }
   ],
-  "analytics": false
+  "analytics": false,
+  "nxCloudId": "6a0d4edceaa36e4dc88b73c5"
 }
