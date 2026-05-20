@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel old runs when a new push hits the same branch — saves CI minutes
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+
+# Nx Cloud picks this up automatically — write access for CI to populate the cache.
+# Read access works without it (via nxCloudId in nx.json), so missing-secret = read-only.
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # nx affected needs git history to diff
+
+      - uses: pnpm/action-setup@v4
+        # version comes from the packageManager field in package.json (pnpm@11.1.3)
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc   # → Node 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Set base/head SHAs so `nx affected` knows what changed
+      - uses: nrwl/nx-set-shas@v4
+
+      # Fail CI if TypeScript project references are stale
+      - run: pnpm nx sync:check
+
+      # Only run targets for projects affected by the diff — cheap as the monorepo grows
+      - run: pnpm nx affected -t lint typecheck build
+
+      # Nx Cloud Self-Healing CI — analyzes failures and (when applicable) opens
+      # an auto-fix PR. `if: always()` so it runs even when previous steps failed.
+      - run: pnpm exec nx fix-ci
+        if: always()
