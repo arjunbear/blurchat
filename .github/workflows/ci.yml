@@ -40,9 +40,6 @@ jobs:
       # Set base/head SHAs so `nx affected` knows what changed
       - uses: nrwl/nx-set-shas@v5
 
-      # Fail CI if TypeScript project references are stale
-      - run: pnpm nx sync:check
-
       # Only run targets for projects affected by the diff — cheap as the monorepo grows
       - run: pnpm nx affected -t lint typecheck build
 

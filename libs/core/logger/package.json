@@ -1,0 +1,34 @@
+{
+  "name": "@blurchat/logger",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./start": "./src/start.ts"
+  },
+  "nx": {
+    "name": "logger",
+    "tags": ["scope:core", "type:util"],
+    "targets": {
+      "typecheck": {
+        "executor": "nx:run-commands",
+        "cache": true,
+        "inputs": ["default", "^default"],
+        "options": {
+          "command": "tsc -p tsconfig.json --noEmit",
+          "cwd": "libs/core/logger"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/auto-instrumentations-node": "^0.76.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.218.0",
+    "@opentelemetry/resources": "^2.7.1",
+    "@opentelemetry/sdk-node": "^0.218.0",
+    "nestjs-pino": "^4.6.1",
+    "pino-http": "^11.0.0"
+  }
+}

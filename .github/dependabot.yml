@@ -38,6 +38,19 @@ updates:
           - 'eslint'
           - 'eslint-*'
           - '@eslint/*'
+      opentelemetry:
+        patterns:
+          - '@opentelemetry/*'
+      pino:
+        patterns:
+          - 'pino'
+          - 'pino-*'
+          - 'nestjs-pino'
+      swc:
+        patterns:
+          - '@swc/*'
+          - '@swc-node/*'
+          - 'swc-loader'
 
   # GitHub Actions workflow dependencies (actions/*, pnpm/*, nrwl/*, github/*)
   - package-ecosystem: 'github-actions'
