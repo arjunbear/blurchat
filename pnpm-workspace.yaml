@@ -1,6 +1,8 @@
 packages:
   - 'apps/*'
   - 'libs/**'
+# supply-chain: refuse registry packages published < 24h ago (mirrors Railway)
+minimumReleaseAge: 1440
 allowBuilds:
   '@nestjs/core': true
   '@parcel/watcher': true
