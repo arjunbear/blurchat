@@ -12,6 +12,9 @@ type PinoHttpRequest = IncomingMessage & { id: string | number };
 const pinoHttpOptions: PinoHttpOptions = {
   level: process.env.LOG_LEVEL ?? (isProd ? 'info' : 'debug'),
 
+  // app lines carry only reqId; full req/res lands once on the completion line
+  quietReqLogger: true,
+
   transport: isProd
     ? undefined
     : {
