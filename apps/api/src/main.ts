@@ -1,7 +1,7 @@
 import '@blurchat/logger/start';
 
 import { NestFactory } from '@nestjs/core';
-import { Logger, httpLoggerMiddleware } from '@blurchat/logger';
+import { Logger } from '@blurchat/logger';
 
 import { AppModule } from './app/app.module';
 
@@ -10,7 +10,6 @@ async function bootstrap() {
 
   const logger = app.get(Logger);
   app.useLogger(logger);
-  app.use(httpLoggerMiddleware);
   app.flushLogs();
 
   const globalPrefix = 'api';

@@ -3,7 +3,9 @@ import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
 
 import { pinoModuleOptions } from './pino.config';
 
-export const LoggerModule: DynamicModule = {
-  ...PinoLoggerModule.forRoot(pinoModuleOptions),
-  global: true,
-};
+// deferred so it snapshots @InjectPinoLogger contexts after they register
+export class LoggerModule {
+  static forRoot(): DynamicModule {
+    return { ...PinoLoggerModule.forRoot(pinoModuleOptions), global: true };
+  }
+}

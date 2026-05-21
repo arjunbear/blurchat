@@ -9,14 +9,13 @@ Pino + OpenTelemetry logger for NestJS. Injects `trace_id` / `span_id` into log 
 import '@blurchat/logger/start';   // first import, side-effect OTel SDK
 
 import { NestFactory } from '@nestjs/core';
-import { Logger, httpLoggerMiddleware } from '@blurchat/logger';
+import { Logger } from '@blurchat/logger';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   const logger = app.get(Logger);
   app.useLogger(logger);
-  app.use(httpLoggerMiddleware);
   app.flushLogs();
   await app.listen(process.env.PORT ?? 3000);
 }
@@ -27,11 +26,11 @@ bootstrap();
 // app.module.ts
 import { LoggerModule } from '@blurchat/logger';
 
-@Module({ imports: [LoggerModule] })
+@Module({ imports: [LoggerModule.forRoot()] })
 export class AppModule {}
 ```
 
-`httpLoggerMiddleware` is mounted explicitly because nestjs-pino's auto-middleware doesn't fire under NestJS 11 + global prefix — see [iamolegga/nestjs-pino#1849](https://github.com/iamolegga/nestjs-pino/issues/1849).
+HTTP request logging is nestjs-pino's own middleware, scoped via `forRoutes: ['/']` in `pino.config.ts`. The default `'*'` is invalid under NestJS 11's Express 5 (path-to-regexp@8); `'/'` prefix-matches every route under the global prefix in one pass — see [iamolegga/nestjs-pino#1849](https://github.com/iamolegga/nestjs-pino/issues/1849).
 
 ## Injecting a typed logger
 

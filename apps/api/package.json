@@ -3,11 +3,15 @@
   "version": "0.0.1",
   "private": true,
   "nx": {
+    "tags": ["scope:api", "type:app"],
     "targets": {
       "typecheck": {
         "executor": "nx:run-commands",
         "cache": true,
-        "inputs": ["default", "^default"],
+        "inputs": [
+          "default",
+          "^default"
+        ],
         "options": {
           "command": "tsc -p tsconfig.json --noEmit",
           "cwd": "apps/api"
@@ -17,12 +21,16 @@
         "executor": "nx:run-commands",
         "options": {
           "command": "webpack-cli build",
-          "args": ["--config-node-env=production"],
+          "args": [
+            "--config-node-env=production"
+          ],
           "cwd": "apps/api"
         },
         "configurations": {
           "development": {
-            "args": ["--config-node-env=development"]
+            "args": [
+              "--config-node-env=development"
+            ]
           }
         }
       },
@@ -30,7 +38,9 @@
         "continuous": true,
         "executor": "@nx/js:node",
         "defaultConfiguration": "development",
-        "dependsOn": ["build"],
+        "dependsOn": [
+          "build"
+        ],
         "options": {
           "buildTarget": "api:build",
           "runBuildTargetDependencies": false

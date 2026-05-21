@@ -9,7 +9,7 @@ const isProd = process.env.NODE_ENV === 'production';
 
 type PinoHttpRequest = IncomingMessage & { id: string | number };
 
-export const pinoHttpOptions: PinoHttpOptions = {
+const pinoHttpOptions: PinoHttpOptions = {
   level: process.env.LOG_LEVEL ?? (isProd ? 'info' : 'debug'),
 
   transport: isProd
@@ -41,8 +41,7 @@ export const pinoHttpOptions: PinoHttpOptions = {
         headers: req.headers,
       };
     },
-    // res from pino-std-serializers is a wrapped view, not a real
-    // ServerResponse — no getHeaders(). statusCode is all we need.
+    // pino-std-serializers passes a wrapped res, not a ServerResponse
     res(res: { statusCode: number }) {
       return { statusCode: res.statusCode };
     },
@@ -54,8 +53,7 @@ export const pinoHttpOptions: PinoHttpOptions = {
     return 'info';
   },
 
-  // reqId: X-Railway-Request-Id → OTel trace_id → uuid.
-  // On Railway, req.id matches the edge log id; trace_id stays separate via mixin.
+  // X-Railway-Request-Id → OTel trace_id → uuid
   genReqId(req: IncomingMessage) {
     const upstream = req.headers['x-railway-request-id'];
     if (typeof upstream === 'string') return upstream;
@@ -80,9 +78,8 @@ export const pinoHttpOptions: PinoHttpOptions = {
   },
 };
 
-// forRoutes: [] disables nestjs-pino's broken auto-middleware (#1849).
-// HTTP logger is mounted via app.use(httpLoggerMiddleware) in main.ts.
+// '/' prefix-matches every route under the global prefix; '*' is invalid in Express 5
 export const pinoModuleOptions: Params = {
   pinoHttp: pinoHttpOptions,
-  forRoutes: [],
+  forRoutes: ['/'],
 };
