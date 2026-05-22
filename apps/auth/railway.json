@@ -1,10 +1,10 @@
 {
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "pnpm nx build api"
+    "buildCommand": "pnpm nx build auth"
   },
   "deploy": {
-    "startCommand": "node dist/apps/api/main.js",
+    "startCommand": "node dist/apps/auth/main.js",
     "restartPolicyType": "ON_FAILURE"
   }
 }

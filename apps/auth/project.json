@@ -1,0 +1,50 @@
+{
+  "name": "auth",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/auth/src",
+  "projectType": "application",
+  "tags": ["scope:auth", "type:app"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "command": "tsc -p tsconfig.json --noEmit",
+        "cwd": "apps/auth"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "webpack-cli build",
+        "args": ["--config-node-env=production"],
+        "cwd": "apps/auth"
+      },
+      "configurations": {
+        "development": {
+          "args": ["--config-node-env=development"]
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "auth:build",
+        "runBuildTargetDependencies": false,
+        "runtimeArgs": ["--env-file-if-exists=apps/auth/.env"]
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "auth:build:development"
+        },
+        "production": {
+          "buildTarget": "auth:build:production"
+        }
+      }
+    }
+  }
+}

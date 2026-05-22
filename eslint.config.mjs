@@ -48,6 +48,10 @@ export default [
               sourceTag: 'scope:api',
               onlyDependOnLibsWithTags: ['scope:api', 'scope:core'],
             },
+            {
+              sourceTag: 'scope:auth',
+              onlyDependOnLibsWithTags: ['scope:auth', 'scope:core'],
+            },
           ],
         },
       ],

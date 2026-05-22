@@ -12,6 +12,7 @@ node_modules
 !.env.example
 
 # IDEs and editors
+.vscode/
 /.idea
 .project
 .classpath
@@ -36,3 +37,7 @@ Thumbs.db
 
 /.nx
 .claude
+
+# agent skills (local, not committed)
+.agents/
+skills-lock.json
