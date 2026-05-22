@@ -1,4 +1,4 @@
-import '@blurchat/logger/start';
+import '@blurchat/logger/instrumentation';
 
 import { NestFactory } from '@nestjs/core';
 import { Logger } from '@blurchat/logger';

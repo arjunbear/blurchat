@@ -6,7 +6,7 @@ Pino + OpenTelemetry logger for NestJS. Injects `trace_id` / `span_id` into log 
 
 ```ts
 // main.ts — order matters
-import '@blurchat/logger/start';   // first import, side-effect OTel SDK
+import '@blurchat/logger/instrumentation';   // first import, side-effect OTel SDK
 
 import { NestFactory } from '@nestjs/core';
 import { Logger } from '@blurchat/logger';
