@@ -43,7 +43,8 @@
         ],
         "options": {
           "buildTarget": "api:build",
-          "runBuildTargetDependencies": false
+          "runBuildTargetDependencies": false,
+          "runtimeArgs": ["--env-file-if-exists=apps/api/.env"]
         },
         "configurations": {
           "development": {

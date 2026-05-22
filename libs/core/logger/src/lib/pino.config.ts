@@ -7,8 +7,6 @@ import type { Options as PinoHttpOptions } from 'pino-http';
 
 const isProd = process.env.NODE_ENV === 'production';
 
-type PinoHttpRequest = IncomingMessage & { id: string | number };
-
 const pinoHttpOptions: PinoHttpOptions = {
   level: process.env.LOG_LEVEL ?? (isProd ? 'info' : 'debug'),
 
@@ -36,9 +34,8 @@ const pinoHttpOptions: PinoHttpOptions = {
   // },
 
   serializers: {
-    req(req: PinoHttpRequest) {
+    req(req: IncomingMessage) {
       return {
-        id: req.id,
         method: req.method,
         url: req.url,
         headers: req.headers,
