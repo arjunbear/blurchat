@@ -1,5 +1,5 @@
 {
-  "name": "logger",
+  "name": "core-logger",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/core/logger/src",
   "projectType": "library",

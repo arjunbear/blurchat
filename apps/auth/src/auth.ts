@@ -41,6 +41,10 @@ export const auth = betterAuth({
     cookieCache: { enabled: true, maxAge: 60 * 5 },
   },
 
+  advanced: {
+    database: { generateId: 'uuid' }, // record ids as UUIDs (not the default base62)
+  },
+
   plugins: [
     admin(),
     jwt({

@@ -41,6 +41,9 @@ importers:
       better-auth:
         specifier: ^1.6.11
         version: 1.6.11(@opentelemetry/api@1.9.1)(pg@8.21.0)
+      jose:
+        specifier: ^6.2.3
+        version: 6.2.3
       nestjs-pino:
         specifier: ^4.6.1
         version: 4.6.1(@nestjs/common@11.1.21(reflect-metadata@0.2.2)(rxjs@7.8.2))(pino-http@11.0.0)(pino@10.3.1)(rxjs@7.8.2)

@@ -1,7 +1,7 @@
 {
-  "name": "core-swagger",
+  "name": "core-auth",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/core/swagger/src",
+  "sourceRoot": "libs/core/auth/src",
   "projectType": "library",
   "tags": ["scope:core", "type:util"],
   "targets": {
@@ -11,7 +11,7 @@
       "inputs": ["default", "^default"],
       "options": {
         "command": "tsc -p tsconfig.json --noEmit",
-        "cwd": "libs/core/swagger"
+        "cwd": "libs/core/auth"
       }
     }
   }
