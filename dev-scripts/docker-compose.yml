@@ -1,23 +1,23 @@
-name: blurchat
+name: chatarooni
 
 services:
   postgres:
     image: postgres:18
-    container_name: blurchat-pg
+    container_name: chatarooni-pg
     environment:
-      POSTGRES_USER: blurchat
-      POSTGRES_PASSWORD: blurchat
+      POSTGRES_USER: chatarooni
+      POSTGRES_PASSWORD: chatarooni
       POSTGRES_DB: auth
     ports: ['5432:5432']
     volumes:
       # PG18's image moved the data dir; mount the parent so the volume
       # captures it regardless of the exact PGDATA subpath.
-      - blurchat-pgdata:/var/lib/postgresql
+      - chatarooni-pgdata:/var/lib/postgresql
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U blurchat -d auth']
+      test: ['CMD-SHELL', 'pg_isready -U chatarooni -d auth']
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
-  blurchat-pgdata:
+  chatarooni-pgdata:

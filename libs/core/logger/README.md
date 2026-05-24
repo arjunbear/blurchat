@@ -1,4 +1,4 @@
-# @blurchat/logger
+# @chatarooni/logger
 
 Pino + OpenTelemetry logger for NestJS. Injects `trace_id` / `span_id` into log lines via a pino mixin reading the active OTel span.
 
@@ -6,10 +6,10 @@ Pino + OpenTelemetry logger for NestJS. Injects `trace_id` / `span_id` into log 
 
 ```ts
 // main.ts — order matters
-import '@blurchat/logger/instrumentation';   // first import, side-effect OTel SDK
+import '@chatarooni/logger/instrumentation';   // first import, side-effect OTel SDK
 
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@blurchat/logger';
+import { Logger } from '@chatarooni/logger';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -24,7 +24,7 @@ bootstrap();
 
 ```ts
 // app.module.ts
-import { LoggerModule } from '@blurchat/logger';
+import { LoggerModule } from '@chatarooni/logger';
 
 @Module({ imports: [LoggerModule.forRoot()] })
 export class AppModule {}
@@ -38,7 +38,7 @@ For a per-class logger with context tagged automatically:
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import { InjectPinoLogger, PinoLogger } from '@blurchat/logger';
+import { InjectPinoLogger, PinoLogger } from '@chatarooni/logger';
 
 @Injectable()
 export class FooService {
@@ -52,7 +52,7 @@ export class FooService {
 }
 ```
 
-`Logger` (from `@blurchat/logger`) shadows the one in `@nestjs/common` — don't import both.
+`Logger` (from `@chatarooni/logger`) shadows the one in `@nestjs/common` — don't import both.
 
 ## Behaviour
 
@@ -72,7 +72,7 @@ Header redaction is commented out in `pino.config.ts` — incoming headers (incl
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | unset → SDK doesn't start. Set the **base** endpoint (e.g. Grafana's `…/otlp`); the SDK appends `/v1/traces` |
 | `OTEL_EXPORTER_OTLP_HEADERS` | unset; set `Authorization=Basic …` for authed backends (Grafana Cloud, Honeycomb) |
 | `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` (this lib uses the HTTP exporter) |
-| `OTEL_SERVICE_NAME` | unset → `unknown_service:node`; **set per service** (e.g. `blurchat-api`) |
+| `OTEL_SERVICE_NAME` | unset → `unknown_service:node`; **set per service** (e.g. `chatarooni-api`) |
 | `OTEL_SERVICE_VERSION` | `RAILWAY_GIT_COMMIT_SHA[:7]` if set, else absent |
 | `NODE_ENV` | `development` (used as `deployment.environment.name`) |
 | `OTEL_TRACES_SAMPLER` | `AlwaysOn` (set to e.g. `traceidratio` for sampling) |

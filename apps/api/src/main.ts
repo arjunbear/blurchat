@@ -1,8 +1,8 @@
-import '@blurchat/logger/instrumentation';
+import '@chatarooni/logger/instrumentation';
 
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@blurchat/logger';
-import { setupSwagger } from '@blurchat/swagger';
+import { Logger } from '@chatarooni/logger';
+import { setupSwagger } from '@chatarooni/swagger';
 
 import { AppModule } from './app/app.module';
 
@@ -28,8 +28,8 @@ async function bootstrap() {
   });
 
   setupSwagger(app, {
-    title: 'blurchat-api',
-    prodUrl: 'https://blurchat-api.up.railway.app',
+    title: 'chatarooni-api',
+    prodUrl: 'https://chatarooni-api.up.railway.app',
   });
 
   const port = process.env.PORT || 3000;

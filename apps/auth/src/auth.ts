@@ -18,8 +18,8 @@ const googleSecret = process.env.GOOGLE_CLIENT_SECRET;
 const isProd = process.env.NODE_ENV === 'production';
 
 // Better Auth runs outside Nest DI and is loaded by the migrate CLI (which
-// can't resolve the @blurchat/logger path alias), so it gets its own inline
-// pino instance — mirrors @blurchat/logger's config (level / transport / trace).
+// can't resolve the @chatarooni/logger path alias), so it gets its own inline
+// pino instance — mirrors @chatarooni/logger's config (level / transport / trace).
 const baLogger = pino({
   name: process.env.OTEL_SERVICE_NAME,
   level: process.env.LOG_LEVEL ?? (isProd ? 'info' : 'debug'),
@@ -43,7 +43,7 @@ const baLogger = pino({
 }).child({ context: 'better-auth' });
 
 export const auth = betterAuth({
-  appName: 'blurchat',
+  appName: 'chatarooni',
   database: new Pool({ connectionString: process.env.DATABASE_URL }),
   trustedOrigins,
 

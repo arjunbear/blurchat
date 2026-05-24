@@ -5,7 +5,7 @@ import {
   Public,
   Roles,
   type AuthUser,
-} from '@blurchat/auth';
+} from '@chatarooni/auth';
 
 import { AppService } from './app.service';
 
