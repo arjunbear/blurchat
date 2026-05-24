@@ -29,7 +29,7 @@ async function bootstrap() {
 
   setupSwagger(app, {
     title: 'chatarooni-api',
-    prodUrl: 'https://chatarooni-api.up.railway.app',
+    prodUrl: 'https://api.chatarooni.com',
   });
 
   const port = process.env.PORT || 3000;
