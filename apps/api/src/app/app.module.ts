@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@blurchat/logger';
-import { AuthModule } from '@blurchat/auth';
+import { LoggerModule } from '@chatarooni/logger';
+import { AuthModule } from '@chatarooni/auth';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';

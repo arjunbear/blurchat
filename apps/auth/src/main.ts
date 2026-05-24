@@ -1,7 +1,7 @@
-import '@blurchat/logger/instrumentation';
+import '@chatarooni/logger/instrumentation';
 
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@blurchat/logger';
+import { Logger } from '@chatarooni/logger';
 
 import { AppModule } from './app/app.module';
 

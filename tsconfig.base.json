@@ -12,10 +12,10 @@
     "strict": true,
     "target": "es2022",
     "paths": {
-      "@blurchat/auth": ["./libs/core/auth/src/index.ts"],
-      "@blurchat/logger": ["./libs/core/logger/src/index.ts"],
-      "@blurchat/logger/instrumentation": ["./libs/core/logger/src/instrumentation.ts"],
-      "@blurchat/swagger": ["./libs/core/swagger/src/index.ts"]
+      "@chatarooni/auth": ["./libs/core/auth/src/index.ts"],
+      "@chatarooni/logger": ["./libs/core/logger/src/index.ts"],
+      "@chatarooni/logger/instrumentation": ["./libs/core/logger/src/instrumentation.ts"],
+      "@chatarooni/swagger": ["./libs/core/swagger/src/index.ts"]
     }
   }
 }

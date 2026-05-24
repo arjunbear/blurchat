@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
-import { LoggerModule } from '@blurchat/logger';
+import { LoggerModule } from '@chatarooni/logger';
 
 import { auth } from '../auth';
 
