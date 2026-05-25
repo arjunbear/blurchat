@@ -26,9 +26,30 @@
       "options": {
         "targetName": "lint"
       }
+    },
+    {
+      "plugin": "@nx/next/plugin",
+      "options": {
+        "startTargetName": "start",
+        "buildTargetName": "build",
+        "devTargetName": "serve",
+        "serveStaticTargetName": "serve-static",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
     }
   ],
   "analytics": false,
-  "tui": { "enabled": false },
-  "nxCloudId": "6a0d4edceaa36e4dc88b73c5"
+  "tui": {
+    "enabled": false
+  },
+  "nxCloudId": "6a0d4edceaa36e4dc88b73c5",
+  "generators": {
+    "@nx/next": {
+      "application": {
+        "style": "css",
+        "linter": "eslint"
+      }
+    }
+  }
 }

@@ -11,4 +11,5 @@ allowBuilds:
   less: false
   nx: true
   protobufjs: false
+  sharp: true
   unrs-resolver: true

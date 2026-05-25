@@ -52,6 +52,10 @@ export default [
               sourceTag: 'scope:auth',
               onlyDependOnLibsWithTags: ['scope:auth', 'scope:core'],
             },
+            {
+              sourceTag: 'scope:web',
+              onlyDependOnLibsWithTags: ['scope:web', 'scope:core'],
+            },
           ],
         },
       ],

@@ -1,9 +1,10 @@
 {
   "build": {
-    "builder": "DOCKERFILE",
-    "dockerfilePath": "Dockerfile"
+    "builder": "RAILPACK",
+    "buildCommand": "pnpm nx build web"
   },
   "deploy": {
+    "startCommand": "pnpm next start apps/web -p ${PORT:-3000} -H 0.0.0.0",
     "restartPolicyType": "ON_FAILURE"
   }
 }
