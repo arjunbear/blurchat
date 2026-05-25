@@ -14,14 +14,6 @@
         "envFile": "apps/web/.env"
       }
     },
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "inputs": ["default", "^default"],
-      "options": {
-        "command": "tsc -p tsconfig.json --noEmit",
-        "cwd": "apps/web"
-      }
-    }
+    "typecheck": {}
   }
 }

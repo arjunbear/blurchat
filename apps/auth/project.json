@@ -5,15 +5,7 @@
   "projectType": "application",
   "tags": ["scope:auth", "type:app"],
   "targets": {
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "inputs": ["default", "^default"],
-      "options": {
-        "command": "tsc -p tsconfig.json --noEmit",
-        "cwd": "apps/auth"
-      }
-    },
+    "typecheck": {},
     "build": {
       "executor": "nx:run-commands",
       "options": {

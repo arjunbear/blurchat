@@ -5,14 +5,6 @@
   "projectType": "library",
   "tags": ["scope:core", "type:util"],
   "targets": {
-    "typecheck": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "inputs": ["default", "^default"],
-      "options": {
-        "command": "tsc -p tsconfig.json --noEmit",
-        "cwd": "libs/core/logger"
-      }
-    }
+    "typecheck": {}
   }
 }
