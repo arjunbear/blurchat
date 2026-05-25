@@ -17,7 +17,11 @@ export class AuthModule {
         { provide: AUTH_OPTIONS, useValue: options },
         {
           provide: JWKS_RESOLVER,
-          useValue: createRemoteJWKSet(new URL('/api/auth/jwks', options.baseUrl)),
+          useValue: createRemoteJWKSet(
+            options.jwksUrl
+              ? new URL(options.jwksUrl)
+              : new URL('/api/auth/jwks', options.issuer),
+          ),
         },
         // global guards run in provider order: authenticate, then authorize
         { provide: APP_GUARD, useClass: JwtAuthGuard },

@@ -9,8 +9,9 @@ import { AppService } from './app.service';
   imports: [
     LoggerModule.forRoot(),
     AuthModule.forRoot({
-      baseUrl: process.env.AUTH_URL ?? 'http://localhost:3001',
+      issuer: process.env.AUTH_ISSUER ?? 'http://localhost:3001',
       audience: process.env.AUTH_AUDIENCE,
+      jwksUrl: process.env.AUTH_JWKS_URL,
     }),
   ],
   controllers: [AppController],

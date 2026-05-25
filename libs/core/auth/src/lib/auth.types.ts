@@ -1,10 +1,13 @@
 import type { JWTPayload } from 'jose';
 
 export interface AuthModuleOptions {
-  // Auth service base URL: origin of the JWKS endpoint and the expected `iss`.
-  baseUrl: string;
-  // Expected `aud` claim; defaults to `baseUrl` (Better Auth's default).
+  // Expected JWT `iss` (and default `aud`); the public auth service URL.
+  issuer: string;
+  // Expected `aud` claim; defaults to `issuer`.
   audience?: string;
+  // Where to FETCH the JWKS; defaults to `${issuer}/api/auth/jwks`.
+  // Override with an internal URL (e.g. Railway private networking) to skip the public hop.
+  jwksUrl?: string;
 }
 
 // JWT claims minted by the auth service: standard set + our payload fields.

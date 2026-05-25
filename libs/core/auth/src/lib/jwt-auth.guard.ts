@@ -40,8 +40,8 @@ export class JwtAuthGuard implements CanActivate {
     let payload: AuthJwtPayload;
     try {
       ({ payload } = await jwtVerify<AuthJwtPayload>(token, this.jwks, {
-        issuer: this.options.baseUrl,
-        audience: this.options.audience ?? this.options.baseUrl,
+        issuer: this.options.issuer,
+        audience: this.options.audience ?? this.options.issuer,
       }));
     } catch {
       throw new UnauthorizedException('Invalid or expired token');
