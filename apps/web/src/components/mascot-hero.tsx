@@ -79,7 +79,7 @@ export function MascotHero() {
           width={615}
           height={615}
           priority
-          className="size-[clamp(140px,46vw,615px)] object-contain opacity-30 blur-[2px] md:opacity-100 md:blur-none"
+          className="size-[clamp(140px,46vw,615px)] object-contain opacity-30 blur-[2px] xl:opacity-100 xl:blur-none"
         />
       </motion.div>
     </motion.div>
