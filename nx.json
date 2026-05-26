@@ -9,8 +9,7 @@
     ],
     "sharedGlobals": [
       { "env": "NEXT_PUBLIC_AUTH_URL" },
-      { "env": "NEXT_PUBLIC_API_URL" },
-      { "env": "GOOGLE_SITE_VERIFICATION" }
+      { "env": "NEXT_PUBLIC_API_URL" }
     ]
   },
   "targetDefaults": {
