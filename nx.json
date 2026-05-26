@@ -5,11 +5,12 @@
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
-      "!{projectRoot}/eslint.config.mjs",
+      "!{projectRoot}/eslint.config.mjs"
+    ],
+    "sharedGlobals": [
       { "env": "NEXT_PUBLIC_AUTH_URL" },
       { "env": "NEXT_PUBLIC_API_URL" }
-    ],
-    "sharedGlobals": []
+    ]
   },
   "targetDefaults": {
     "typecheck": {

@@ -1,7 +1,7 @@
 {
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "echo \"BUILD-ENV-CHECK NEXT_PUBLIC_AUTH_URL=[${NEXT_PUBLIC_AUTH_URL:-MISSING}] NEXT_PUBLIC_API_URL=[${NEXT_PUBLIC_API_URL:-MISSING}]\" && pnpm nx build web --skip-nx-cache"
+    "buildCommand": "pnpm nx build web"
   },
   "deploy": {
     "startCommand": "pnpm --filter @chatarooni/web exec next start -p ${PORT:-3000} -H 0.0.0.0",
