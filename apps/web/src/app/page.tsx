@@ -11,7 +11,7 @@ export default function Home() {
           <h1 className="text-balance text-5xl font-bold tracking-tight sm:text-7xl">
             Talk to <span className="text-primary">strangers</span>
           </h1>
-          <p className="mt-6 max-w-md text-balance text-lg text-muted-foreground">
+          <p className="mt-6 max-w-md text-balance text-lg text-foreground/80">
             Free random text chat. Meet new people from around the world — no sign-up
             required.
           </p>

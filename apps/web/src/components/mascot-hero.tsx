@@ -1,7 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
-import { motion, useAnimate, useScroll, useTransform } from 'motion/react';
+import {
+  motion,
+  useAnimate,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from 'motion/react';
 import Image from 'next/image';
 
 const STORAGE_KEY = 'mascot-hero-seen';
@@ -21,18 +27,18 @@ const ENTRANCE_TRANSITION = {
   opacity: { duration: 0.5, ease: 'easeOut' },
 } as const;
 
-// Background mascot on the right of the hero: arcs in on page load,
-// slides + fades out as the user scrolls down.
+// Background mascot on the right of the hero. Visible on every viewport
+// (scaled down on mobile via the size clamp) so the character isn't
+// desktop-only.
 //
-// Animation policy: play the entrance ONCE per tab session.
-//   - Fresh visit            → animate
-//   - Refresh (F5 / Cmd+R)   → animate (Performance API says navigationType === 'reload')
-//   - SPA back-nav within tab → snap to rest, no animation
-//   - New tab                → animate (sessionStorage is per-tab and resets)
-//
-// This avoids the mascot re-doing its big entrance every time the user
-// taps back to home, while still re-playing on explicit reload.
+// Animation policy:
+//   - Plays the entrance ONCE per tab session (sessionStorage flag)
+//   - Re-plays on refresh (Performance API navigation type === 'reload')
+//   - Snaps to rest on SPA back-nav within the same session
+//   - Snaps on BFCache restore (pageshow.persisted)
+//   - Respects `prefers-reduced-motion` — no entrance, no scroll-out
 export function MascotHero() {
+  const reducedMotion = useReducedMotion();
   const { scrollY } = useScroll();
   const scrollX = useTransform(scrollY, [0, 400], ['0%', '110%']);
   const scrollOpacity = useTransform(scrollY, [0, 350], [1, 0]);
@@ -43,31 +49,27 @@ export function MascotHero() {
       'navigation'
     )[0] as PerformanceNavigationTiming | undefined;
     const isReload = navEntry?.type === 'reload';
-    const seen = sessionStorage.getItem(STORAGE_KEY);
+    const seen = sessionStorage.getItem(STORAGE_KEY) !== null;
+    const shouldSkipEntrance = Boolean(reducedMotion) || (seen && !isReload);
 
-    if (seen && !isReload) {
-      // Back-nav within the same tab session → snap, no animation.
+    if (shouldSkipEntrance) {
       animate(scope.current, REST, { duration: 0 });
     } else {
-      // First time this session OR an explicit refresh → play entrance.
       animate(scope.current, ENTRANCE_TARGET, ENTRANCE_TRANSITION);
       sessionStorage.setItem(STORAGE_KEY, '1');
     }
 
-    // Defense-in-depth for browser BFCache restores: BFCache preserves the
-    // DOM but the framer `initial` state may stick if the previous animation
-    // hadn't completed. Snap to rest to guarantee in-position.
     const onPageShow = (e: PageTransitionEvent) => {
       if (e.persisted) animate(scope.current, REST, { duration: 0 });
     };
     window.addEventListener('pageshow', onPageShow);
     return () => window.removeEventListener('pageshow', onPageShow);
-  }, [animate, scope]);
+  }, [animate, scope, reducedMotion]);
 
   return (
     <motion.div
-      style={{ x: scrollX, opacity: scrollOpacity }}
-      className="pointer-events-none absolute inset-y-0 right-0 -z-10 hidden items-center md:flex"
+      style={reducedMotion ? undefined : { x: scrollX, opacity: scrollOpacity }}
+      className="pointer-events-none absolute inset-y-0 right-0 -z-10 flex items-center"
       aria-hidden
     >
       <motion.div ref={scope} initial={INITIAL}>
@@ -77,7 +79,7 @@ export function MascotHero() {
           width={615}
           height={615}
           priority
-          className="size-[clamp(307px,46vw,615px)] object-contain"
+          className="size-[clamp(140px,46vw,615px)] object-contain opacity-30 blur-[2px] md:opacity-100 md:blur-none"
         />
       </motion.div>
     </motion.div>

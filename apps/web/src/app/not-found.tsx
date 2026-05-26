@@ -10,7 +10,7 @@ export default function NotFound() {
       <h1 className="mt-4 text-balance text-4xl font-bold tracking-tight sm:text-5xl">
         Page not <span className="text-primary">found</span>
       </h1>
-      <p className="mt-4 max-w-md text-balance text-muted-foreground">
+      <p className="mt-4 max-w-md text-balance text-foreground/80">
         That page doesn&apos;t exist yet — we&apos;re still building. Let&apos;s
         get you back home.
       </p>
