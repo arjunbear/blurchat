@@ -7,7 +7,7 @@ export default function Home() {
     <>
       <section className="relative w-full overflow-hidden">
         <MascotHero />
-        <main className="relative z-10 mx-auto flex min-h-[calc(100svh-5rem)] max-w-6xl flex-col items-center justify-center px-4 text-center sm:px-6">
+        <main className="relative z-10 mx-auto flex min-h-[calc(100svh-var(--header-h))] max-w-6xl flex-col items-center justify-center px-4 text-center sm:px-6">
           <h1 className="text-balance text-5xl font-bold tracking-tight sm:text-7xl">
             Talk to <span className="text-primary">strangers</span>
           </h1>

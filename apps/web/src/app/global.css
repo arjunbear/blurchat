@@ -3,6 +3,9 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Layout — referenced by the header (h-[var(--header-h)]) and by page
+     containers that fill the viewport below it (calc(100svh - var(--header-h))). */
+  --header-h: 5rem;
   --radius: 0.625rem;
   --background: oklch(0.86 0.034 72);
   --foreground: oklch(0.205 0.02 55);
