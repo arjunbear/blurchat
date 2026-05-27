@@ -14,6 +14,11 @@ import Image from 'next/image';
 // on first visit and all snap to rest on return.
 const STORAGE_KEY = 'mascots-seen';
 
+// Shared image styling used by every mascot on the page (size + dimming).
+// Tuning these values affects all mascots consistently.
+const MASCOT_IMAGE_CLASSES =
+  'size-[clamp(140px,35vw,480px)] opacity-30 blur-[2px]';
+
 const REST = { x: '0%', y: '0%', rotate: 0, opacity: 1 };
 
 const ENTRANCE_TRANSITION = {
@@ -46,8 +51,8 @@ interface MascotProps {
   imageClassName?: string;
   /** Off-screen direction the mascot enters from. Defaults to 'right'. */
   enterFrom?: EnterFrom;
-  /** Direction the mascot slides off-screen as user scrolls past. Defaults to match enterFrom. */
-  scrollOutTo?: 'right' | 'left';
+  /** Direction the mascot slides off-screen as user scrolls past. Defaults to match enterFrom (or 'right' for top/bottom enters). */
+  scrollOutTo?: 'right' | 'left' | 'up' | 'down';
   /** LCP hint — use only for the most prominent above-the-fold mascot. */
   priority?: boolean;
 }
@@ -84,8 +89,23 @@ export function Mascot({
   });
 
   const exitDirection = scrollOutTo ?? (enterFrom === 'left' ? 'left' : 'right');
-  const exitX = exitDirection === 'left' ? '-110%' : '110%';
-  const scrollX = useTransform(scrollYProgress, [0.5, 0.7], ['0%', exitX]);
+  const isVerticalExit = exitDirection === 'up' || exitDirection === 'down';
+  // Horizontal exits use % (relative to container — image-width for edge-anchored
+  // mascots → ~150-500px of travel). Vertical exits use vh (viewport-relative)
+  // because vertical containers are often full-section height; using % there
+  // would produce a 110vh sweep which feels far too dramatic.
+  const horizontalExitOffset = exitDirection === 'left' ? '-110%' : '110%';
+  const verticalExitOffset = exitDirection === 'up' ? '-30vh' : '30vh';
+  const scrollX = useTransform(
+    scrollYProgress,
+    [0.5, 0.7],
+    ['0%', isVerticalExit ? '0%' : horizontalExitOffset]
+  );
+  const scrollY = useTransform(
+    scrollYProgress,
+    [0.5, 0.7],
+    ['0%', isVerticalExit ? verticalExitOffset : '0%']
+  );
   const scrollOpacity = useTransform(scrollYProgress, [0.5, 0.7], [1, 0]);
 
   const [scope, animate] = useAnimate();
@@ -132,7 +152,11 @@ export function Mascot({
   return (
     <motion.div
       ref={containerRef}
-      style={reducedMotion ? undefined : { x: scrollX, opacity: scrollOpacity }}
+      style={
+        reducedMotion
+          ? undefined
+          : { x: scrollX, y: scrollY, opacity: scrollOpacity }
+      }
       className={`pointer-events-none absolute -z-10 select-none ${containerClassName ?? ''}`}
       aria-hidden
     >
@@ -143,6 +167,7 @@ export function Mascot({
           width={width}
           height={height}
           priority={priority}
+          loading="eager"
           className={`object-contain ${imageClassName ?? ''}`}
         />
       </motion.div>
@@ -150,19 +175,60 @@ export function Mascot({
   );
 }
 
-// Background mascot pinned to the right of the hero. Visible on every viewport
-// (scaled down via the size clamp); dimmed + blurred below xl so it doesn't
-// compete with content on narrower screens.
-export function MascotHero() {
+// The five-mascot ensemble pinned around the hero. Each enters from a
+// different direction and fades as it scrolls past. Drop into any
+// `relative w-full overflow-hidden` section to render the cluster.
+export function MascotCluster() {
+  // Stacking order (top → bottom as they overlap): blue, yellow, orange, purple, green.
+  // DOM order is the reverse: first rendered = bottom of stack.
   return (
-    <Mascot
-      src="/mascots/orange.png"
-      width={615}
-      height={615}
-      containerClassName="inset-y-0 right-0 flex items-center"
-      imageClassName="size-[clamp(140px,46vw,615px)] opacity-30 blur-[2px] xl:opacity-100 xl:blur-none"
-      enterFrom="right"
-      priority
-    />
+    <>
+      <Mascot
+        src="/mascots/green.png"
+        width={615}
+        height={615}
+        containerClassName="-top-4 md:-top-12 xl:-top-20 inset-x-0 bottom-0 flex items-start justify-center"
+        imageClassName={MASCOT_IMAGE_CLASSES}
+        enterFrom="top"
+        scrollOutTo="down"
+      />
+      <Mascot
+        src="/mascots/purple.png"
+        width={615}
+        height={615}
+        containerClassName="inset-y-0 left-0 flex items-center pb-48"
+        imageClassName={MASCOT_IMAGE_CLASSES}
+        enterFrom="left"
+        scrollOutTo="right"
+      />
+      <Mascot
+        src="/mascots/orange.png"
+        width={615}
+        height={615}
+        containerClassName="inset-y-0 right-0 flex items-center"
+        imageClassName={MASCOT_IMAGE_CLASSES}
+        enterFrom="right"
+        scrollOutTo="left"
+        priority
+      />
+      <Mascot
+        src="/mascots/yellow.png"
+        width={615}
+        height={615}
+        containerClassName="bottom-12 left-12 xl:left-72"
+        imageClassName={MASCOT_IMAGE_CLASSES}
+        enterFrom="bottom"
+      />
+      <Mascot
+        src="/mascots/blue.png"
+        width={615}
+        height={615}
+        containerClassName="bottom-0 right-12 xl:right-72"
+        imageClassName={MASCOT_IMAGE_CLASSES}
+        enterFrom="bottom"
+        scrollOutTo="left"
+      />
+    </>
   );
 }
+

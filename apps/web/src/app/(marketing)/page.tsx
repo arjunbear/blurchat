@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { MascotHero } from '@/components/mascot-hero';
+import { MascotCluster } from '@/components/mascot';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
       <section className="relative w-full overflow-hidden">
-        <MascotHero />
+        <MascotCluster />
         <main className="relative z-10 mx-auto flex min-h-[calc(100svh-var(--header-h))] max-w-6xl flex-col items-center justify-center px-4 text-center sm:px-6">
           <h1 className="text-balance text-5xl font-bold tracking-tight sm:text-7xl">
             Talk to <span className="text-primary">strangers</span>

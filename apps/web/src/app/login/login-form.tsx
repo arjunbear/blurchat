@@ -98,8 +98,7 @@ export function LoginForm() {
     router.refresh();
   };
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleEmailSubmit = async () => {
     setLoading(true);
     setError(null);
 
@@ -157,8 +156,7 @@ export function LoginForm() {
     }
   };
 
-  const handleForgotSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleForgotSubmit = async () => {
     setLoading(true);
     setError(null);
 
@@ -194,9 +192,9 @@ export function LoginForm() {
   // The outer form dispatches based on the current mode, so Enter submits the
   // right action whether the user is on the sign-in or forgot-password fields.
   const handleFormSubmit = (e: React.FormEvent) => {
-    if (emailMode === 'sign-in') return handleEmailSubmit(e);
-    if (emailMode === 'forgot') return handleForgotSubmit(e);
     e.preventDefault();
+    if (emailMode === 'sign-in') handleEmailSubmit();
+    else if (emailMode === 'forgot') handleForgotSubmit();
   };
 
   const errorMessage = error && (
