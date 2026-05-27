@@ -5,6 +5,7 @@ import { bearer } from 'better-auth/plugins/bearer';
 import { jwt } from 'better-auth/plugins/jwt';
 import { Pool } from 'pg';
 import pino from 'pino';
+import { basePinoOptions } from '@chatarooni/logger-options';
 
 const trustedOrigins = (process.env.TRUSTED_ORIGINS ?? 'http://localhost:5173')
   .split(',')
@@ -19,24 +20,10 @@ const cookieDomain = process.env.COOKIE_DOMAIN;
 
 const isProd = process.env.NODE_ENV === 'production';
 
-// Better Auth runs outside Nest DI and is loaded by the migrate CLI (which
-// can't resolve the @chatarooni/logger path alias), so it gets its own inline
-// pino instance — mirrors @chatarooni/logger's config (level / transport).
-// trace_id/span_id are injected by @opentelemetry/instrumentation-pino, not here.
-const baLogger = pino({
-  name: process.env.OTEL_SERVICE_NAME,
-  level: process.env.LOG_LEVEL ?? (isProd ? 'info' : 'debug'),
-  transport: isProd
-    ? undefined
-    : {
-        target: 'pino-pretty',
-        options: {
-          singleLine: true,
-          colorize: true,
-          translateTime: 'SYS:HH:MM:ss.l',
-        },
-      },
-}).child({ context: 'better-auth' });
+// Better Auth runs outside Nest DI — uses the bare-pino options subpath
+// (no NestJS coupling) so the migrate CLI's loader can pull it in safely.
+// trace_id/span_id are injected by @opentelemetry/instrumentation-pino.
+const baLogger = pino(basePinoOptions()).child({ context: 'better-auth' });
 
 export const auth = betterAuth({
   appName: 'chatarooni',
@@ -95,6 +82,17 @@ export const auth = betterAuth({
     ...(cookieDomain
       ? { crossSubDomainCookies: { enabled: true, domain: cookieDomain } }
       : {}),
+  },
+
+  // Default is 100 req / 10s per IP across all endpoints — fine for general
+  // traffic but leaves auth-sensitive routes wide open to brute-force / email
+  // abuse. Storage is in-memory (per-process); switch to 'database' if
+  // apps/auth scales horizontally so IPs can't reset by hitting a fresh instance.
+  rateLimit: {
+    customRules: {
+      '/sign-in/email': { window: 60 * 15, max: 20 }, // brute-force gate
+      '/request-password-reset': { window: 60 * 60, max: 10 }, // email-spam gate
+    },
   },
 
   plugins: [

@@ -20,6 +20,9 @@
       "@/*": ["./src/*"],
       "@chatarooni/logger/instrumentation": [
         "../../libs/core/logger/src/instrumentation.ts"
+      ],
+      "@chatarooni/logger-options": [
+        "../../libs/core/logger-options/src/index.ts"
       ]
     }
   },

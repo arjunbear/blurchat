@@ -15,6 +15,7 @@
       "@chatarooni/auth": ["./libs/core/auth/src/index.ts"],
       "@chatarooni/logger": ["./libs/core/logger/src/index.ts"],
       "@chatarooni/logger/instrumentation": ["./libs/core/logger/src/instrumentation.ts"],
+      "@chatarooni/logger-options": ["./libs/core/logger-options/src/index.ts"],
       "@chatarooni/swagger": ["./libs/core/swagger/src/index.ts"]
     }
   }

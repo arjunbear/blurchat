@@ -14,10 +14,9 @@ permissions:
   actions: read
   contents: read
 
-# Nx Cloud picks this up automatically — write access for CI to populate the cache.
-# Read access works without it (via nxCloudId in nx.json), so missing-secret = read-only.
-env:
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+# Nx Cloud disabled — FREE plan limit reached. Re-enable alongside nxCloudId in nx.json.
+# env:
+#   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
   ci:

@@ -5,9 +5,30 @@ import './global.css';
 
 const fontSans = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
+const SITE_URL = 'https://chatarooni.com';
 const SITE_TITLE = 'Chatarooni — talk to strangers';
 const SITE_DESCRIPTION =
   'Free random text chat. Meet new people and make friends from around the world.';
+
+// schema.org WebApplication — gives Google rich-result eligibility (app card,
+// category, free-to-use signal). Render inline in <body> so crawlers see it.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Chatarooni',
+  url: SITE_URL,
+  description: SITE_DESCRIPTION,
+  inLanguage: 'en',
+  image: `${SITE_URL}/opengraph-image.png`,
+  applicationCategory: 'SocialNetworkingApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://chatarooni.com'),
@@ -34,6 +55,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${fontSans.variable} font-sans antialiased`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            // escape '<' to its unicode form so a stray '</script>' in any
+            // string field can never break out of the JSON-LD block
+            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+          }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
