@@ -51,7 +51,9 @@ export function BrandMark({
         priority={priority}
         className={variant.img}
       />
-      <span>
+      {/* Logo-only under 360px so the wordmark doesn't collide with the
+          header controls on the smallest phones. */}
+      <span className="max-[360px]:hidden">
         Chatarooni<span className="font-normal text-primary">.com</span>
       </span>
     </>

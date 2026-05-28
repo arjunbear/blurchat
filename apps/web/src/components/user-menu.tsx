@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ChevronDown, LogOut } from 'lucide-react';
+import { ChevronDown, LogOut, UserRound } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,8 +31,12 @@ export function UserMenu({ user }: { user: User }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
+        {/* Icon-only on phones (the displayName is a long publicId for now);
+            name reveals at sm+ where there's room. Full name always in the
+            dropdown below. */}
         <Button variant="outline" size="lg">
-          <span className="max-w-32 truncate">{label}</span>
+          <UserRound className="size-4" />
+          <span className="hidden max-w-32 truncate sm:inline">{label}</span>
           <ChevronDown className="size-4" />
         </Button>
       </DropdownMenuTrigger>
