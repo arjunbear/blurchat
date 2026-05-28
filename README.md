@@ -1,29 +1,5 @@
 # talk 2 strangers kek
 
-## TODO
-
-### Frontend
-
-- ~~**Login form: remove sign-up toggle** — `disableSignUp: true` is live in apps/auth, but the form still has a Sign-up mode that returns `signup_disabled` on submit. Drop the mode toggle and the Name field; keep only "Sign in" + "Continue with Google".~~ ✅ done — login form is sign-in only (Google / email / anonymous), no sign-up mode.
-- ~~**Login form: "Forgot password?" link** — add to the form, points to a `/forgot-password` page that calls `requestPasswordReset`.~~ ✅ done — forgot/reset is an in-place flow in the login form (no separate page), calls `requestPasswordReset` with `redirectTo: …/reset-password`. Still blocked on Resend for the email to actually send.
-- **`/reset-password` page** — landing page for the emailed reset link; reads the token and calls `authClient.resetPassword({ newPassword, token })`. Blocked on backend email service (Resend).
-- **Home page: real body sections** — replace TEMP lorem placeholder in `app/page.tsx` with how-it-works → safety → footer-CTA sections. Needed for soft launch.
-- **`/chat` route + route-group restructure** — build the actual product. As the first commit, restructure: move existing pages into `app/(marketing)/*` (keeps header + footer), put chat under `app/(app)/chat/*` (own layout, no marketing chrome). Strip `SiteHeader`/`SiteFooter` from root layout.
-- **Anon flow on frontend** — `signIn.anonymous()` is wired to the login button; still TODO: fire it lazily on first chat engagement (not just from /login); `AccountMenu` adapts for anon users (show "Save your account" CTA → `/login?intent=claim` instead of just Sign out); show "Chatting as … [sign up to save]" affordance in chat. Blocked on `/chat` existing. (The claim-vs-signin intent routing itself is already wired in the form + backend `onLinkAccount`.)
-- **Rename UI in chat** — `/chat` settings should let users change displayName via `authClient.updateUser({ displayName })`. Blocked on `/chat` existing AND on the random-name generator (displayName is currently the raw publicId UUID).
-- **Browser-side JWT for chat** — chat WebSocket auth needs the JWT fetched client-side via `authClient.token()` (or the `set-auth-jwt` header), held in JS memory, refreshed before the 15-min expiry. Blocked on `/chat`.
-- **PWA support** — add `viewport-fit=cover` + `safe-area-inset` padding so Add-to-Home-Screen looks clean on iPhone (Dynamic Island / home indicator).
-- ~~**Auth: errorCallbackURL** — add to Google sign-in so OAuth errors route to the frontend instead of an auth 404.~~ ✅ done — `errorCallbackURL: …/login` on both social sign-ins; the login form reads `?error=` and shows a message.
-- **Cloudflare: cache static frontend** — Cache Rule on apex; defer until frontend stable (cached HTML goes stale during dev).
-
-### Backend
-
-- **Email service (Resend)** — wire `sendResetPassword` in `apps/auth/src/auth.ts`; without it, `requestPasswordReset` silently no-ops and users can't recover passwords. Blocks the forgot-password UX from working.
-- **Orphan anon user cleanup** — anon rows linger after Path B (silent merge) or claim-error flows because Better Auth's anonymous plugin only deletes the anon on a successful link transfer. Add a periodic job (cron / scheduled Postgres function / Nest schedule) to delete anon users with no active session older than N hours. Once `/chat` exists, also decide what happens to their pre-link records keyed by `publicId` (delete cascade, or preserve as historical).
-- **OAuth: Apple Sign-In** — needs Apple Developer Account ($99/yr); pre-generate the `clientSecret` JWT (ES256 signed with `.p8` key, rotate every 6 months); add `https://appleid.apple.com` to `trustedOrigins` when enabled; HTTPS-only (no localhost dev). Required if/when iOS app ships.
-- **OAuth: Facebook** — Facebook Developer App + `FACEBOOK_CLIENT_ID`/`FACEBOOK_CLIENT_SECRET` env vars; add `mapProfileToUser` fallback for the case where Facebook omits `email` (phone-only accounts, revoked consent).
-- **Cloudflare: CSAM scanning** — enable + NCMEC reporting once image uploads exist.
-
 # Auth & User Identity Architecture
 
 Plan for Better Auth + anonymous users + cross-service identity in the chatarooni monorepo (apps/auth, apps/api, apps/web).
@@ -406,7 +382,31 @@ WHERE "isAnonymous" = true
 
 ## Related docs
 
-- The **TODO** section at the top of this README tracks the actionable slice of this plan.
+- The **TODO** section at the bottom of this README tracks the actionable slice of this plan.
 - Better Auth anonymous plugin: <https://better-auth.com/docs/plugins/anonymous>
 - Better Auth additional fields: <https://better-auth.com/docs/concepts/database#extending-core-schema>
 - Better Auth JWT plugin (`definePayload`, `getSubject`, `audience`): <https://better-auth.com/docs/plugins/jwt>
+
+# TODO
+
+## Frontend
+
+- ~~**Login form: remove sign-up toggle** — `disableSignUp: true` is live in apps/auth, but the form still has a Sign-up mode that returns `signup_disabled` on submit. Drop the mode toggle and the Name field; keep only "Sign in" + "Continue with Google".~~ ✅ done — login form is sign-in only (Google / email / anonymous), no sign-up mode.
+- ~~**Login form: "Forgot password?" link** — add to the form, points to a `/forgot-password` page that calls `requestPasswordReset`.~~ ✅ done — forgot/reset is an in-place flow in the login form (no separate page), calls `requestPasswordReset` with `redirectTo: …/reset-password`. Still blocked on Resend for the email to actually send.
+- **`/reset-password` page** — landing page for the emailed reset link; reads the token and calls `authClient.resetPassword({ newPassword, token })`. Blocked on backend email service (Resend).
+- **Home page: real body sections** — replace TEMP lorem placeholder in `app/page.tsx` with how-it-works → safety → footer-CTA sections. Needed for soft launch.
+- **`/chat` route + route-group restructure** — build the actual product. As the first commit, restructure: move existing pages into `app/(marketing)/*` (keeps header + footer), put chat under `app/(app)/chat/*` (own layout, no marketing chrome). Strip `SiteHeader`/`SiteFooter` from root layout.
+- **Anon flow on frontend** — `signIn.anonymous()` is wired to the login button; still TODO: fire it lazily on first chat engagement (not just from /login); `AccountMenu` adapts for anon users (show "Save your account" CTA → `/login?intent=claim` instead of just Sign out); show "Chatting as … [sign up to save]" affordance in chat. Blocked on `/chat` existing. (The claim-vs-signin intent routing itself is already wired in the form + backend `onLinkAccount`.)
+- **Rename UI in chat** — `/chat` settings should let users change displayName via `authClient.updateUser({ displayName })`. Blocked on `/chat` existing AND on the random-name generator (displayName is currently the raw publicId UUID).
+- **Browser-side JWT for chat** — chat WebSocket auth needs the JWT fetched client-side via `authClient.token()` (or the `set-auth-jwt` header), held in JS memory, refreshed before the 15-min expiry. Blocked on `/chat`.
+- **PWA support** — add `viewport-fit=cover` + `safe-area-inset` padding so Add-to-Home-Screen looks clean on iPhone (Dynamic Island / home indicator).
+- ~~**Auth: errorCallbackURL** — add to Google sign-in so OAuth errors route to the frontend instead of an auth 404.~~ ✅ done — `errorCallbackURL: …/login` on both social sign-ins; the login form reads `?error=` and shows a message.
+- **Cloudflare: cache static frontend** — Cache Rule on apex; defer until frontend stable (cached HTML goes stale during dev).
+
+## Backend
+
+- **Email service (Resend)** — wire `sendResetPassword` in `apps/auth/src/auth.ts`; without it, `requestPasswordReset` silently no-ops and users can't recover passwords. Blocks the forgot-password UX from working.
+- **Orphan anon user cleanup** — anon rows linger after Path B (silent merge) or claim-error flows because Better Auth's anonymous plugin only deletes the anon on a successful link transfer. Add a periodic job (cron / scheduled Postgres function / Nest schedule) to delete anon users with no active session older than N hours. Once `/chat` exists, also decide what happens to their pre-link records keyed by `publicId` (delete cascade, or preserve as historical).
+- **OAuth: Apple Sign-In** — needs Apple Developer Account ($99/yr); pre-generate the `clientSecret` JWT (ES256 signed with `.p8` key, rotate every 6 months); add `https://appleid.apple.com` to `trustedOrigins` when enabled; HTTPS-only (no localhost dev). Required if/when iOS app ships.
+- **OAuth: Facebook** — Facebook Developer App + `FACEBOOK_CLIENT_ID`/`FACEBOOK_CLIENT_SECRET` env vars; add `mapProfileToUser` fallback for the case where Facebook omits `email` (phone-only accounts, revoked consent).
+- **Cloudflare: CSAM scanning** — enable + NCMEC reporting once image uploads exist.
