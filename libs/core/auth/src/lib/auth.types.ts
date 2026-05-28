@@ -11,9 +11,14 @@ export interface AuthModuleOptions {
 }
 
 // JWT claims minted by the auth service: standard set + our payload fields.
+// publicId is the stable cross-service identity (anon→real link preserves it).
+// displayName starts as a copy of publicId; will swap to a name generator later.
 export interface AuthJwtPayload extends JWTPayload {
   email: string;
   role: string;
+  publicId: string;
+  displayName: string;
+  isAnonymous: boolean;
 }
 
 // The verified payload attached to `req.user`, with `sub` guaranteed present.

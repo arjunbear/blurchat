@@ -177,11 +177,19 @@ export function LoginForm() {
     }
   };
 
-  // TODO: once Better Auth's anonymous plugin is wired (see
-  // docs/auth-architecture.md), call `authClient.signIn.anonymous()` before
-  // redirecting. For now this just sends the user home.
-  const handleAnonymous = () => {
-    router.push('/');
+  const handleAnonymous = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      await authClient.signIn.anonymous(undefined, {
+        onError: (ctx) =>
+          setError(ctx.error.message ?? 'Anonymous sign-in failed.'),
+        onSuccess: () => router.push('/'),
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const setMode = (mode: EmailMode) => {

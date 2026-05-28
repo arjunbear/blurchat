@@ -25,7 +25,7 @@ export default function Home() {
               <span className="relative flex size-2.5" aria-hidden="true">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-foreground opacity-75" />
                 <span className="relative inline-flex size-2.5 items-center justify-center rounded-full bg-primary-foreground">
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span className="size-1.5 rounded-full bg-emerald-400" />
                 </span>
               </span>
               Start chatting

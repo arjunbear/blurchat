@@ -5,7 +5,7 @@ import { context, isSpanContextValid, trace } from '@opentelemetry/api';
 import type { Params } from 'nestjs-pino';
 import type { Options as PinoHttpOptions } from 'pino-http';
 
-import { basePinoOptions } from '@chatarooni/logger-options';
+const isProd = process.env.NODE_ENV === 'production';
 
 // query-string keys that may carry secrets (OAuth code, verification tokens, …)
 const SENSITIVE_QUERY = new Set([
@@ -28,8 +28,21 @@ function sanitizeUrl(url?: string): string | undefined {
   );
 }
 
+// Base level/transport/name mirror apps/auth/src/auth.ts and
+// apps/web/src/lib/logger.ts — keep them in sync.
 const pinoHttpOptions: PinoHttpOptions = {
-  ...basePinoOptions(),
+  name: process.env.OTEL_SERVICE_NAME,
+  level: process.env.LOG_LEVEL ?? (isProd ? 'info' : 'debug'),
+  transport: isProd
+    ? undefined
+    : {
+        target: 'pino-pretty',
+        options: {
+          singleLine: true,
+          colorize: true,
+          translateTime: 'SYS:HH:MM:ss.l',
+        },
+      },
 
   // app lines carry only reqId; full req/res lands once on the completion line
   quietReqLogger: true,

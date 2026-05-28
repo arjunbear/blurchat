@@ -47,7 +47,13 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException('Invalid or expired token');
     }
 
-    if (!payload.sub || !payload.email || !payload.role) {
+    if (
+      !payload.sub ||
+      !payload.email ||
+      !payload.role ||
+      !payload.publicId ||
+      !payload.displayName
+    ) {
       throw new UnauthorizedException('Token missing required claims');
     }
 
