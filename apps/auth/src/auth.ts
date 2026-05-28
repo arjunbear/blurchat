@@ -87,10 +87,13 @@ export const auth = betterAuth({
   // Generate publicId once at insert time, then mirror to displayName so they
   // share the value. Doing both in one before-hook avoids two independent
   // defaultValue() calls returning different UUIDs.
+  // Defensive: if publicId is already set (e.g., a future code path that
+  // pre-populates it), don't regenerate.
   databaseHooks: {
     user: {
       create: {
         before: async (user) => {
+          if (user.publicId) return { data: user };
           const id = uuidv7();
           return { data: { ...user, publicId: id, displayName: id } };
         },
@@ -150,7 +153,13 @@ export const auth = betterAuth({
       // When an anon user signs up via OAuth, copy publicId/displayName forward
       // so any pre-link records (chat messages on apps/api keyed by publicId)
       // keep pointing at the same identity after the upgrade.
+      // Two-step swap because publicId is UNIQUE: free anon's slot first by
+      // renaming, then claim it on newUser. The anonymous() plugin deletes the
+      // anon row right after this hook returns, so the placeholder is fleeting.
       onLinkAccount: async ({ anonymousUser, newUser, ctx }) => {
+        await ctx.context.internalAdapter.updateUser(anonymousUser.user.id, {
+          publicId: `_linked_${anonymousUser.user.id}`,
+        });
         await ctx.context.internalAdapter.updateUser(newUser.user.id, {
           publicId: anonymousUser.user.publicId,
           displayName: anonymousUser.user.displayName,
