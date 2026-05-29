@@ -21,7 +21,7 @@ export function SiteFooter() {
           </Link>
         </nav>
         <p className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Chatarooni
+          © {new Date().getFullYear()} Chatarooni. All rights reserved.
         </p>
       </div>
     </footer>
