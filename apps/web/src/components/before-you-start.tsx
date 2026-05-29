@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mars, Venus, type LucideIcon } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,9 +18,9 @@ import { cn } from '@/lib/utils';
 
 type Gender = 'male' | 'female';
 
-const OPTIONS: { value: Gender; label: string; Icon: LucideIcon }[] = [
-  { value: 'male', label: 'Male', Icon: Mars },
-  { value: 'female', label: 'Female', Icon: Venus },
+const OPTIONS: { value: Gender; label: string; src: string }[] = [
+  { value: 'male', label: 'Male', src: '/mascots/blue-boy.png' },
+  { value: 'female', label: 'Female', src: '/mascots/pink-girl.png' },
 ];
 
 // The mandatory entry gate on /chat. Collects gender (immutable) + implicit
@@ -66,7 +66,7 @@ export function BeforeYouStart() {
         <div className="space-y-2">
           <p className="text-lg font-semibold">I am:</p>
           <div className="grid grid-cols-2 gap-3">
-            {OPTIONS.map(({ value, label, Icon }) => (
+            {OPTIONS.map(({ value, label, src }) => (
               <Button
                 key={value}
                 type="button"
@@ -75,12 +75,19 @@ export function BeforeYouStart() {
                 aria-pressed={gender === value}
                 disabled={loading}
                 className={cn(
-                  'h-9 justify-center gap-2 text-base',
+                  'h-auto flex-col gap-0 p-0 text-base', 
                   gender === value && 'border-primary ring-2 ring-primary',
                 )}
               >
-                <Icon className="size-5" />
-                {label}
+                <Image
+                  src={src}
+                  alt=""
+                  width={160}
+                  height={128}
+                  className="h-16 w-auto"
+                  priority
+                />
+                <span className="-mt-3">{label}</span>
               </Button>
             ))}
           </div>

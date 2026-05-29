@@ -21,6 +21,9 @@ const trustedOrigins = (process.env.TRUSTED_ORIGINS ?? 'http://localhost:5173')
 const googleId = process.env.GOOGLE_CLIENT_ID;
 const googleSecret = process.env.GOOGLE_CLIENT_SECRET;
 
+const facebookId = process.env.FACEBOOK_CLIENT_ID;
+const facebookSecret = process.env.FACEBOOK_CLIENT_SECRET;
+
 // prod: parent domain to share the session cookie across subdomains (auth ↔ app)
 const cookieDomain = process.env.COOKIE_DOMAIN;
 
@@ -172,7 +175,12 @@ export const auth = betterAuth({
     },
   },
 
-  // Google activates only once its credentials are set in env
+  // Each provider activates only once its credentials are set in env.
+  // OAuth signup is OFF for all of them (disableSignUp): signIn.social only
+  // signs INTO existing accounts, never creates one. New accounts are born only
+  // via the gendered /chat gate (signIn.anonymous) → claim (linkSocial), so
+  // every account has a gender. A never-seen provider identity → signup_disabled.
+  // (linkSocial/claim is unaffected — it links to the existing anon.)
   socialProviders: {
     ...(googleId && googleSecret
       ? {
@@ -180,11 +188,20 @@ export const auth = betterAuth({
             clientId: googleId,
             clientSecret: googleSecret,
             prompt: 'select_account', // always show the account picker
-            // OAuth signup is OFF: signIn.social only signs INTO existing
-            // accounts, never creates one. New accounts are born only via the
-            // gendered /chat gate (signIn.anonymous) → claim (linkSocial), so
-            // every account has a gender. A never-seen Google → signup_disabled.
-            // (linkSocial/claim is unaffected — it links to the existing anon.)
+            disableSignUp: true,
+          },
+        }
+      : {}),
+    ...(facebookId && facebookSecret
+      ? {
+          facebook: {
+            clientId: facebookId,
+            clientSecret: facebookSecret,
+            // Default scopes (email, public_profile) are enough. Facebook may
+            // still omit email (phone-only / revoked / invalid) — fine here:
+            // OAuth never creates a user (disableSignUp), and sign-in/claim key
+            // off the provider account id, not email, so a missing email can't
+            // block either flow.
             disableSignUp: true,
           },
         }
@@ -194,13 +211,13 @@ export const auth = betterAuth({
   account: {
     accountLinking: {
       enabled: true,
-      trustedProviders: ['google'],
+      trustedProviders: ['google', 'facebook'],
       updateUserInfoOnLink: true,
       // An anonymous user's email is a generated temp address, so it never
       // matches the real email of the provider being linked. Required for the
       // anon→real "claim" flow (linkSocial); only loosens explicit, user-
-      // initiated linking (not sign-in auto-linking), and only Google (trusted)
-      // is enabled.
+      // initiated linking (not sign-in auto-linking), and only trusted
+      // providers (Google, Facebook) are enabled.
       allowDifferentEmails: true,
     },
   },
