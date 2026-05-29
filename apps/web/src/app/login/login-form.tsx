@@ -298,11 +298,16 @@ export function LoginForm({ isAnonymous }: { isAnonymous: boolean }) {
                   variant="outline"
                   onClick={() => setMode('sign-in')}
                   disabled={loading}
+                  className="h-auto min-h-9 py-2"
                 >
-                  <Mail className="size-5" />
-                  <span>
-                    Continue with email{' '}
-                    <span className="font-normal opacity-70">
+                  <Mail className="size-5 shrink-0" />
+                  {/* whitespace-normal lets the label wrap (the button is
+                      nowrap); each chunk stays intact, so it's one line when it
+                      fits and the qualifier drops to a second line only when too
+                      narrow — auto-stacks, no fixed breakpoint. */}
+                  <span className="whitespace-normal text-center leading-tight">
+                    <span className="whitespace-nowrap">Continue with email</span>{' '}
+                    <span className="whitespace-nowrap text-xs font-normal opacity-70">
                       (existing users)
                     </span>
                   </span>
