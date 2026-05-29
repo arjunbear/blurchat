@@ -24,4 +24,16 @@ export const userAdditionalFields = {
     required: true,
     input: false,
   },
+  // 'male' | 'female'. Collected at the /chat gate and ridden in on the
+  // signIn.anonymous body; set ONCE in databaseHooks.user.create.before —
+  // exactly like publicId (required + input:false; the plugin doesn't provide
+  // it, the hook does). input:false ⇒ immutable (updateUser can't change it,
+  // no guard needed). required ⇒ NOT NULL, so a create without a gender (i.e.
+  // not via the gate) hard-fails: "no account without gender" at the DB level.
+  // Travels in the JWT (immutable; apps/api matchmaking needs it at connect).
+  gender: {
+    type: 'string' as const,
+    required: true,
+    input: false,
+  },
 };

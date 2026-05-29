@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Eye, EyeOff, Ghost, Mail } from 'lucide-react';
+import { Eye, EyeOff, Mail } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { BrandMark } from '@/components/brand-mark';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,6 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 
@@ -89,12 +88,16 @@ type EmailMode = 'collapsed' | 'sign-in' | 'forgot' | 'forgot-sent';
 function errorMessageFor(code: string | null): string | null {
   if (!code) return null;
   switch (code) {
-    // linkSocial (claim flow): the chosen provider account already belongs to a
-    // real account, so the guest can't claim it. They're still the guest. A
-    // DIFFERENT new account keeps their data (Path A transfer); signing into the
-    // existing one discards the guest (Path B).
+    // Claim (linkSocial) against an already-registered provider account. The
+    // guest stays signed in; signing into the existing account below discards
+    // the guest. (To KEEP guest data, claim a different account from the chat
+    // banner — not from here, which is sign-in mode.)
     case 'account_already_linked_to_different_user':
-      return 'That account already exists. Continue with a different account to keep your chats, or sign in to the existing one (your guest chats will be lost).';
+      return "You already have an account with that provider. Sign in to it below — your guest chats won't carry over.";
+    // signIn.social with a provider that has no account yet — OAuth signup is
+    // disabled, so accounts are only created via the /chat gate.
+    case 'signup_disabled':
+      return 'No account found for that. Tap “Start chatting” to create one.';
     default:
       return 'Sign-in failed. Please try again.';
   }
@@ -211,31 +214,6 @@ export function LoginForm({ isAnonymous }: { isAnonymous: boolean }) {
           onSuccess: () => setEmailMode('forgot-sent'),
         }
       );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAnonymous = async () => {
-    // Already anonymous — nothing to create; just enter the chat. (Calling
-    // signIn.anonymous again errors with "cannot sign in again anonymously".)
-    if (isAnonymous) {
-      router.push('/chat');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      await authClient.signIn.anonymous(undefined, {
-        onError: (ctx) =>
-          setError(ctx.error.message ?? 'Anonymous sign-in failed.'),
-        // onAuthSuccess push()es to /chat AND refresh()es — the refresh
-        // invalidates the Router Cache so back-nav to a logged-out-rendered
-        // page (home header) re-fetches with the new session.
-        onSuccess: onAuthSuccess,
-      });
     } finally {
       setLoading(false);
     }
@@ -445,20 +423,6 @@ export function LoginForm({ isAnonymous }: { isAnonymous: boolean }) {
                 </button>
               </Field>
             )}
-
-            <FieldSeparator>OR</FieldSeparator>
-
-            <Field>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleAnonymous}
-                disabled={loading}
-              >
-                <Ghost className="size-5" />
-                Continue anonymously
-              </Button>
-            </Field>
 
             <FieldDescription className="text-center">
               By continuing, you agree to our{' '}

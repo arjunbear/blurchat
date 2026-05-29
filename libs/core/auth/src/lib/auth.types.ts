@@ -19,6 +19,9 @@ export interface AuthJwtPayload extends JWTPayload {
   publicId: string;
   displayName: string;
   isAnonymous: boolean;
+  // 'male' | 'female'. Required at account creation (the gendered /chat gate),
+  // so always present on a real token. Used by apps/api matchmaking.
+  gender: string;
 }
 
 // The verified payload attached to `req.user`, with `sub` guaranteed present.

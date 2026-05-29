@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 // if the chosen provider account already belongs to someone else.
 export function AnonymousBanner() {
   return (
-    <div className="flex w-full items-center justify-center gap-3 bg-primary px-3 py-1 text-sm font-medium text-primary-foreground">
+    <div className="flex w-full items-center justify-center gap-3 bg-primary px-3 pb-1 pt-[calc(0.25rem+env(safe-area-inset-top))] text-sm font-medium text-primary-foreground">
       <span className="min-w-0 truncate">You&apos;re anonymous</span>
       <Button
         asChild

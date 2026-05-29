@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import './global.css';
@@ -47,6 +47,21 @@ export const metadata: Metadata = {
   },
   twitter: { card: 'summary_large_image' },
   robots: { index: true, follow: true },
+  // iOS Add-to-Home-Screen → standalone (no Safari chrome). black-translucent
+  // lets content sit under the status bar, paired with the safe-area insets.
+  appleWebApp: {
+    capable: true,
+    title: 'Chatarooni',
+    statusBarStyle: 'black-translucent',
+  },
+};
+
+// viewport-fit=cover lets the app paint into the notch / home-indicator areas;
+// elements then reclaim space via env(safe-area-inset-*) (see global.css).
+// themeColor tints the mobile browser/status-bar chrome (dark — the default).
+export const viewport: Viewport = {
+  themeColor: '#211f1c',
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

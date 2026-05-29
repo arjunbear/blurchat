@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth';
+import { APIError } from 'better-auth/api';
 import { openAPI } from 'better-auth/plugins';
 import { admin } from 'better-auth/plugins/admin';
 import { anonymous } from 'better-auth/plugins/anonymous';
@@ -98,10 +99,28 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        before: async (user) => {
-          if (user.publicId) return { data: user };
-          const id = uuidv7();
-          return { data: { ...user, publicId: id, displayName: id } };
+        before: async (user, ctx) => {
+          // gender is collected at the /chat gate and ridden in as a query param
+          // on signIn.anonymous (?gender=…; the endpoint takes no body). This
+          // hook is the only writer (input:false) and the column is required, so
+          // reject a create without a valid gender with a clean 400 rather than
+          // letting the NOT NULL constraint surface as a 500. The gate guarantees
+          // it; this only fires for malformed/direct requests.
+          const raw = (ctx as { query?: { gender?: unknown } } | undefined)
+            ?.query?.gender;
+          if (raw !== 'male' && raw !== 'female') {
+            throw new APIError('BAD_REQUEST', {
+              message: 'A valid gender is required.',
+            });
+          }
+          const id = user.publicId ? undefined : uuidv7();
+          return {
+            data: {
+              ...user,
+              ...(id ? { publicId: id, displayName: id } : {}),
+              gender: raw,
+            },
+          };
         },
       },
     },
@@ -161,6 +180,12 @@ export const auth = betterAuth({
             clientId: googleId,
             clientSecret: googleSecret,
             prompt: 'select_account', // always show the account picker
+            // OAuth signup is OFF: signIn.social only signs INTO existing
+            // accounts, never creates one. New accounts are born only via the
+            // gendered /chat gate (signIn.anonymous) → claim (linkSocial), so
+            // every account has a gender. A never-seen Google → signup_disabled.
+            // (linkSocial/claim is unaffected — it links to the existing anon.)
+            disableSignUp: true,
           },
         }
       : {}),
@@ -207,42 +232,11 @@ export const auth = betterAuth({
 
   plugins: [
     admin(),
-    anonymous({
-      // Fires when an anon user signs IN via OAuth (signIn.social) and Better
-      // Auth establishes a session for another user. Two cases:
-      //   (a) Fresh OAuth account → transfer publicId/displayName forward so
-      //       pre-link records (chat etc. keyed by publicId) keep working.
-      //   (b) Existing OAuth account → silent sign-in; anon data discarded by
-      //       design (Path B). Don't touch the existing user's publicId.
-      //
-      // NOTE: the "claim" (upgrade-in-place) flow does NOT come here — it uses
-      // linkSocial, which never creates a new session, so this hook doesn't run.
-      // That's deliberate: claim must fail (not sign in) when the OAuth identity
-      // is already taken, which linkSocial does and signIn.social can't.
-      //
-      // Detect fresh vs existing by comparing user.createdAt to session.createdAt
-      // — a fresh user is created at (≈) the same instant as its first session.
-      onLinkAccount: async ({ anonymousUser, newUser, ctx }) => {
-        const userMs = new Date(newUser.user.createdAt).getTime();
-        const sessionMs = new Date(newUser.session.createdAt).getTime();
-        const isFreshUser = Math.abs(sessionMs - userMs) < 1000;
-
-        // Existing account (Path B): silent sign-in, leave its publicId alone.
-        if (!isFreshUser) return;
-
-        // Two-step swap because publicId is UNIQUE: free anon's slot first by
-        // renaming, then claim it on newUser. The anonymous() plugin deletes
-        // the anon row right after this hook returns, so the placeholder is
-        // fleeting.
-        await ctx.context.internalAdapter.updateUser(anonymousUser.user.id, {
-          publicId: `_linked_${anonymousUser.user.id}`,
-        });
-        await ctx.context.internalAdapter.updateUser(newUser.user.id, {
-          publicId: anonymousUser.user.publicId,
-          displayName: anonymousUser.user.displayName,
-        });
-      },
-    }),
+    // No onLinkAccount: OAuth signup is disabled (google.disableSignUp), so an
+    // anon can never reach the old Path A (publicId transfer), and Path B (sign
+    // into an existing account) is the plugin's default (delete anon, sign in).
+    // Upgrade = linkSocial in-place + databaseHooks.account.create.after.
+    anonymous(),
     jwt({
       jwt: {
         // sub = publicId (not the internal user.id, which changes on anon→real
@@ -257,6 +251,7 @@ export const auth = betterAuth({
           publicId: user.publicId,
           displayName: user.displayName,
           isAnonymous: user.isAnonymous ?? false,
+          gender: user.gender, // 'male' | 'female' — apps/api matchmaking
         }),
       },
     }),

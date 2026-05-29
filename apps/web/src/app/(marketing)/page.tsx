@@ -1,16 +1,12 @@
 import type { Metadata } from 'next';
 import { MascotCluster } from '@/components/mascot';
 import { StartChattingButton } from '@/components/start-chatting-button';
-import { getSession } from '@/lib/auth-session';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
 };
 
-export default async function Home() {
-  const session = await getSession();
-  const isLoggedIn = Boolean(session?.user);
-
+export default function Home() {
   return (
     <>
       <section className="relative w-full overflow-hidden">
@@ -23,7 +19,7 @@ export default async function Home() {
             Free random text chat. Meet new people from around the world — no sign-up
             required.
           </p>
-          <StartChattingButton isLoggedIn={isLoggedIn} />
+          <StartChattingButton />
           <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
             <span className="size-1.5 rounded-full bg-primary/70" aria-hidden="true" />
             Video chat — coming soon
