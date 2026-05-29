@@ -29,7 +29,7 @@ export default async function LoginPage({
   if (sp.intent === 'claim' && !isAnonymous) redirect('/login');
 
   return (
-    <section className="relative w-full overflow-hidden">
+    <section className="relative w-full overflow-hidden" data-lock-overscroll>
       <MascotCluster />
       <main className="relative z-10 mx-auto flex min-h-svh max-w-md flex-col items-center justify-center px-4 sm:px-6">
         {/* Suspense boundary required because LoginForm uses

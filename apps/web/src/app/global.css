@@ -90,3 +90,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Full-viewport, non-scrolling screens (login, chat) tag their root with
+   data-lock-overscroll to kill the iOS elastic "bounce" — the page can't scroll
+   but the document still rubber-bands. overscroll-behavior only works on the
+   scroll root, so set it on html/body and scope it via :has() so scrollable
+   pages (marketing) keep their normal bounce / pull-to-refresh. Unlayered so it
+   wins over any base-layer default. */
+html:has([data-lock-overscroll]),
+html:has([data-lock-overscroll]) body {
+  overscroll-behavior: none;
+}

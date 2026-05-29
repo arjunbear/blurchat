@@ -29,7 +29,10 @@ export default async function ChatPage({
     // as a toast rather than cluttering the gate.
     return (
       // Mobile: dock the gate to the bottom as a sheet. sm+: centered modal.
-      <main className="flex h-svh flex-col justify-end sm:items-center sm:justify-center sm:px-4">
+      <main
+        className="flex h-svh flex-col justify-end sm:items-center sm:justify-center sm:px-4"
+        data-lock-overscroll
+      >
         {sp.notice === 'no-account' && (
           <NoticeToast
             title="No account found"
@@ -50,7 +53,7 @@ export default async function ChatPage({
   const isAnonymous = !justUpgraded && (session.user.isAnonymous ?? false);
 
   return (
-    <div className="flex h-svh flex-col">
+    <div className="flex h-svh flex-col" data-lock-overscroll>
       {justUpgraded && <SessionRefresh />}
       {isAnonymous && <AnonymousBanner />}
       <main className="flex flex-1 items-center justify-center px-4 text-center">
