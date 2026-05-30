@@ -10,7 +10,7 @@ import type { MetadataRoute } from 'next';
 // safe-zone) would round-crop cleanly on Android — worth adding later.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Chatarooni — talk to strangers',
+    name: 'Chatarooni',
     short_name: 'Chatarooni',
     description:
       'Free random text chat. Meet new people and make friends from around the world.',

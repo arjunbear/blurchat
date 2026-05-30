@@ -51,9 +51,9 @@ export function UserMenu({ user }: { user: User }) {
             <DropdownMenuSeparator />
           </>
         )}
-        <DropdownMenuItem onClick={handleSignOut}>
+        <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
           <LogOut className="size-4" />
-          Sign out
+          Logout
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

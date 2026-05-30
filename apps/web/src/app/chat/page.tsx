@@ -7,7 +7,6 @@ import { NoticeToast } from '@/components/notice-toast';
 import { ChatSidebar } from '@/components/chat/chat-sidebar';
 import { SidebarDrawer } from '@/components/chat/sidebar-drawer';
 import { BrandMark } from '@/components/brand-mark';
-import { ModeToggle } from '@/components/mode-toggle';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
@@ -57,7 +56,7 @@ export default async function ChatPage({
           column whose right border continues the <aside> divider below, so the
           wordmark lines up on the same row as the main header. md+ only —
           mobile keeps the in-main ☰ bar instead. */}
-      <header className="hidden h-14 shrink-0 items-center border-b border-border md:flex">
+      <header className="hidden h-12 shrink-0 items-center border-b border-border md:flex">
         <div className="flex h-full w-64 shrink-0 items-center border-r border-border bg-(--sidebar) px-3">
           <BrandMark href="/" size="md" />
         </div>
@@ -65,9 +64,6 @@ export default async function ChatPage({
           <span className="text-sm font-medium text-muted-foreground">
             Text Chat
           </span>
-          <div className="ml-auto flex items-center">
-            <ModeToggle />
-          </div>
         </div>
       </header>
 

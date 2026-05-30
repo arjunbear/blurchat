@@ -58,6 +58,10 @@ export function SidebarTabs() {
         </button>
       </div>
 
+      {/* Full-bleed divider under the toggle (-mx-3 cancels ChatSidebar's px-3,
+          so it spans edge-to-edge like the header / sidebar borders). */}
+      <div className="-mx-3 h-px shrink-0 bg-border" />
+
       {tab === 'chat' ? (
         <>
           <Button className="w-full justify-start gap-2">

@@ -46,7 +46,16 @@ export function SidebarDrawer({
   }, []);
 
   return (
-    <Drawer direction="left" open={open} onOpenChange={setOpen}>
+    <Drawer
+      direction="left"
+      open={open}
+      onOpenChange={setOpen}
+      // Vaul's input repositioning is built for bottom sheets — for a full-height
+      // left drawer it shoots the whole panel up when an input (the Friends
+      // search) is focused on iOS. Off ⇒ the drawer stays full-length and native
+      // scroll keeps the field visible, like the rest of the site.
+      repositionInputs={false}
+    >
       <DrawerTrigger asChild>
         <Button variant="ghost" size="icon-sm" aria-label="Open menu">
           <Menu className="size-5" />

@@ -15,7 +15,7 @@ type SidebarUser = { displayName?: string | null; isAnonymous: boolean };
 // Premium upsell and profile bar — there's nothing to upsell or sign out of.
 export function ChatSidebar({ user }: { user: SidebarUser | null }) {
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3 p-3 pt-[calc(0.75rem+env(safe-area-inset-top))]">
+    <div className="flex h-full min-h-0 flex-col gap-3 p-3 pt-[calc(0.75rem+env(safe-area-inset-top))] pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
       {/* No logo here — on desktop it lives in the top header bar (see page.tsx);
           the mobile drawer intentionally omits it (the ☰ bar shows context). */}
       <SidebarTabs />
