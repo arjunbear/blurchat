@@ -100,6 +100,10 @@ function errorMessageFor(code: string | null): string | null {
     // the flow just needs a fresh start.
     case 'please_restart_the_process':
       return 'That sign-in attempt expired. Please try again.';
+    // A different account already owns this email and can't be merged
+    // automatically (the existing email is unverified, or linking is blocked).
+    case 'account_not_linked':
+      return 'An account with this email already exists. Sign in with the provider you used originally.';
     // (signup_disabled isn't handled here — login/page.tsx redirects it to the
     // /chat gate with a notice, so it never reaches this form.)
     default:

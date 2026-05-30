@@ -64,6 +64,68 @@ function decodeIdTokenClaims(
   }
 }
 
+type ClaimProfile = {
+  name?: string;
+  image?: string;
+  email?: string;
+  emailVerified: boolean;
+};
+
+// The provider profile to adopt when an anonymous user claims their account.
+// Google embeds it in the OAuth ID token; Facebook's web flow returns no ID
+// token, so fetch it from the Graph API with the access token. Returns null
+// when neither source yields anything.
+async function resolveClaimProfile(account: {
+  providerId: string;
+  idToken?: string | null;
+  accessToken?: string | null;
+}): Promise<ClaimProfile | null> {
+  const str = (v: unknown) => (typeof v === 'string' ? v : undefined);
+
+  const claims = decodeIdTokenClaims(account.idToken);
+  if (claims) {
+    return {
+      name: str(claims.name),
+      image: str(claims.picture),
+      email: str(claims.email)?.toLowerCase(),
+      emailVerified: claims.email_verified === true,
+    };
+  }
+
+  if (account.providerId === 'facebook' && account.accessToken) {
+    try {
+      // Unversioned → Facebook serves a current default; name/email/picture are
+      // stable across versions. email is absent for phone-only accounts.
+      const res = await fetch(
+        `https://graph.facebook.com/me?fields=name,email,picture.type(large)&access_token=${encodeURIComponent(
+          account.accessToken,
+        )}`,
+      );
+      if (!res.ok) return null;
+      const p = (await res.json()) as {
+        name?: string;
+        email?: string;
+        picture?: { data?: { url?: string } };
+      };
+      return {
+        name: str(p.name),
+        image: str(p.picture?.data?.url),
+        email: str(p.email)?.toLowerCase(),
+        // Facebook verifies emails server-side (you can't attach an address to a
+        // FB account without confirming it), even though the Graph API returns
+        // no per-email flag — so we trust it as verified. This lets a later
+        // same-email sign-in (e.g. Google) auto-link into this account instead
+        // of failing with account_not_linked.
+        emailVerified: true,
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
 export const auth = betterAuth({
   appName: 'chatarooni',
   database: new Pool({ connectionString: process.env.DATABASE_URL }),
@@ -145,23 +207,25 @@ export const auth = betterAuth({
           if (!user?.isAnonymous) return;
 
           // linkSocial's redirect path doesn't update the user, so pull the
-          // profile from the provider's already-validated ID token (a JWT).
-          const claims = decodeIdTokenClaims(account.idToken);
-          const str = (v: unknown) => (typeof v === 'string' ? v : undefined);
+          // provider profile ourselves — ID token for Google, Graph API for
+          // Facebook (its web flow returns no ID token).
+          const profile = await resolveClaimProfile(account);
 
           const updates: Record<string, unknown> = { isAnonymous: false };
-          const name = str(claims?.name);
-          const image = str(claims?.picture);
-          if (name) updates.name = name; // audit only — not displayed
-          if (image) updates.image = image;
+          if (profile?.name) updates.name = profile.name; // audit only — not displayed
+          if (profile?.image) updates.image = profile.image;
 
           // email is UNIQUE: only adopt if no other account already holds it
           // (e.g. a separate email/password account with the same address).
           // Otherwise keep the temp email — they still sign in via the provider.
-          const email = str(claims?.email)?.toLowerCase();
-          if (email && !(await ctx.context.internalAdapter.findUserByEmail(email))) {
+          // (A Facebook account with no email simply has nothing to adopt.)
+          const email = profile?.email;
+          if (
+            email &&
+            !(await ctx.context.internalAdapter.findUserByEmail(email))
+          ) {
             updates.email = email;
-            updates.emailVerified = claims?.email_verified === true;
+            updates.emailVerified = profile.emailVerified;
           } else if (email) {
             baLogger.warn(
               { userId: account.userId },
@@ -197,11 +261,17 @@ export const auth = betterAuth({
           facebook: {
             clientId: facebookId,
             clientSecret: facebookSecret,
-            // Default scopes (email, public_profile) are enough. Facebook may
-            // still omit email (phone-only / revoked / invalid) — fine here:
-            // OAuth never creates a user (disableSignUp), and sign-in/claim key
-            // off the provider account id, not email, so a missing email can't
-            // block either flow.
+            // Facebook can omit email even with the permission granted
+            // (phone-only accounts / no valid email on file). Better Auth
+            // requires an email to build the profile — it throws before the
+            // disableSignUp check — so synthesize a stable placeholder from the
+            // app-scoped FB id when it's absent. `.invalid` is the RFC 6761
+            // reserved TLD that can never resolve, so no real inbox is ever
+            // addressed; the value is unique per account, so it can't collide.
+            // These users sign in via Facebook, never email.
+            mapProfileToUser: (profile) => ({
+              email: profile.email ?? `${profile.id}@facebook.invalid`,
+            }),
             disableSignUp: true,
           },
         }
