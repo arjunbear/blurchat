@@ -6,6 +6,8 @@ import { BeforeYouStart } from '@/components/before-you-start';
 import { NoticeToast } from '@/components/notice-toast';
 import { ChatSidebar } from '@/components/chat/chat-sidebar';
 import { SidebarDrawer } from '@/components/chat/sidebar-drawer';
+import { BrandMark } from '@/components/brand-mark';
+import { ModeToggle } from '@/components/mode-toggle';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
@@ -51,13 +53,31 @@ export default async function ChatPage({
           sidebar collapses into a drawer opened from the top-bar ☰. Renders in
           every state — while gated it sits dimmed behind the gate overlay. Pad
           for the iOS notch only when no banner already consumes it. */}
+      {/* Desktop top bar (Chitchat-style): the logo sits in a sidebar-width
+          column whose right border continues the <aside> divider below, so the
+          wordmark lines up on the same row as the main header. md+ only —
+          mobile keeps the in-main ☰ bar instead. */}
+      <header className="hidden h-14 shrink-0 items-center border-b border-border md:flex">
+        <div className="flex h-full w-64 shrink-0 items-center border-r border-border bg-(--sidebar) px-3">
+          <BrandMark href="/" size="md" />
+        </div>
+        <div className="flex h-full flex-1 items-center px-4">
+          <span className="text-sm font-medium text-muted-foreground">
+            Text Chat
+          </span>
+          <div className="ml-auto flex items-center">
+            <ModeToggle />
+          </div>
+        </div>
+      </header>
+
       <div
         className={cn(
           'flex min-h-0 flex-1',
           !isAnonymous && 'pt-[env(safe-area-inset-top)]',
         )}
       >
-        <aside className="hidden w-64 shrink-0 border-r border-border bg-card md:flex md:flex-col">
+        <aside className="hidden w-64 shrink-0 border-r border-border bg-(--sidebar) md:flex md:flex-col">
           <ChatSidebar user={sidebarUser} />
         </aside>
 

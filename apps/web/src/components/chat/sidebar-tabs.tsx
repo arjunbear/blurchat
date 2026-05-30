@@ -18,9 +18,10 @@ type Tab = 'chat' | 'friends';
 const TAB_BASE =
   'flex items-center justify-center gap-1.5 rounded-md py-1.5 text-sm font-medium transition-colors';
 
-// Chat / Friends switcher plus the list area beneath it. Client-side because the
-// active tab is local UI state. Both lists are empty placeholders until DMs and
-// friends are wired to the backend; switching tabs is the only live behaviour.
+// Chat / Friends switcher plus the list area beneath it. The active tab is local
+// state, so the mobile drawer always reopens on "chat" — a clean, consistent
+// reset rather than half-remembering the tab while losing the typed search. Both
+// lists are empty placeholders until DMs and friends are wired to the backend.
 export function SidebarTabs() {
   const [tab, setTab] = useState<Tab>('chat');
 

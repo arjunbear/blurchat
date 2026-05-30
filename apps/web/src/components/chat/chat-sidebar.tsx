@@ -1,5 +1,3 @@
-import { Sparkles } from 'lucide-react';
-import { BrandMark } from '@/components/brand-mark';
 import { Button } from '@/components/ui/button';
 import { SidebarProfile } from './sidebar-profile';
 import { SidebarTabs } from './sidebar-tabs';
@@ -18,22 +16,33 @@ type SidebarUser = { displayName?: string | null; isAnonymous: boolean };
 export function ChatSidebar({ user }: { user: SidebarUser | null }) {
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 p-3 pt-[calc(0.75rem+env(safe-area-inset-top))]">
-      <BrandMark href="/" size="md" className="px-1" />
-
+      {/* No logo here — on desktop it lives in the top header bar (see page.tsx);
+          the mobile drawer intentionally omits it (the ☰ bar shows context). */}
       <SidebarTabs />
 
       {user && (
         <>
-          <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
-            <div className="flex items-center gap-1.5">
-              <Sparkles className="size-4 text-primary" />
-              <p className="text-sm font-semibold">Go Premium</p>
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">
+          {/* Desktop: an orange-tinted upsell card (border + tint + blurb).
+              Mobile drawer: strip the box and blurb (md:-only) — just the chip. */}
+          <div className="md:rounded-lg md:border md:border-primary/30 md:bg-primary/5 md:p-3">
+            <p className="text-balance text-xs leading-snug text-muted-foreground max-md:hidden">
               Gender filters, skip the wait, and no ads.
             </p>
-            <Button size="sm" className="mt-2.5 w-full">
-              Upgrade
+            {/* Neutral chip that flips black/white with the theme, so the orange
+                PRO stays legible on either. Text mirrors the wordmark —
+                "Chatarooni" in foreground, the suffix in primary (cf.
+                Chatarooni<span>.com</span> in BrandMark). bg-transparent +
+                hover:bg-transparent drop the Button variant's bg-primary /
+                hover:bg-primary so only the gradient paints (the real hover is
+                opacity). */}
+            <Button
+              size="sm"
+              className="w-full border border-border bg-transparent bg-linear-to-b from-white to-neutral-100 font-semibold text-foreground shadow-sm transition-opacity hover:bg-transparent hover:opacity-90 md:mt-2.5 dark:from-neutral-900 dark:to-neutral-950"
+            >
+              <span>
+                Get Chatarooni{' '}
+                <span className="font-normal text-primary">PRO</span>
+              </span>
             </Button>
           </div>
 

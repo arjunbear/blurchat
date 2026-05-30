@@ -12,6 +12,9 @@
   --foreground: oklch(0.205 0.02 55);
   --card: oklch(0.92 0.022 76);
   --card-foreground: oklch(0.205 0.02 55);
+  /* Sidebar/drawer surface — sits a touch BELOW the page so the chat nav
+     recedes (Discord/Slack-style). Light: barely darker than --background. */
+  --sidebar: oklch(0.83 0.03 74);
   --popover: oklch(0.92 0.022 76);
   --popover-foreground: oklch(0.205 0.02 55);
   --primary: oklch(0.6 0.21 47);
@@ -33,6 +36,8 @@
   --foreground: oklch(0.97 0.01 70);
   --card: oklch(0.29 0.009 60);
   --card-foreground: oklch(0.97 0.01 70);
+  /* Clearly darker than --background (0.24) so the sidebar recedes in dark mode. */
+  --sidebar: oklch(0.21 0.008 60);
   --popover: oklch(0.28 0.009 60);
   --popover-foreground: oklch(0.97 0.01 70);
   --primary: oklch(0.72 0.2 52);

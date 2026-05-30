@@ -1,25 +1,28 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 
-// Mobile-only wrapper: a ☰ button that slides the sidebar in from the left over
-// a scrim (Radix Dialog under the hood — focus trap + Esc for free). `children`
-// is the server-rendered <ChatSidebar>, passed through so it stays a server
-// component. Hidden at md+ where the sidebar is a permanent <aside>.
+// Mobile-only wrapper: a ☰ button that slides the sidebar in from the left.
+// Built on Vaul (not Radix) so the panel is drag-to-dismiss — flick/drag it left
+// to close, with the scrim fading as you go; focus trap, Esc, and scroll-lock
+// come for free. `children` is the server-rendered <ChatSidebar>, passed through
+// so it stays a server component. Hidden at md+ where the sidebar is a permanent
+// <aside>.
 //
-// `banner` true ⇒ the anonymous strip is pinned above the drawer (z-60). Offset
-// the drawer's top by the banner's content height (pt-6 = 1.5rem; the safe-area
-// inset is already paid inside ChatSidebar, so don't double it) so the two share
-// the same ceiling instead of the banner covering the logo.
+// `banner` true ⇒ the anonymous strip is pinned above the drawer (z-60). pt-4
+// drops the drawer's content just below the banner AND centres the Chat/Friends
+// toggle on the main "Text Chat" header row (its center = banner-bottom + 1.5rem,
+// matched by pt-4 + ChatSidebar's pt + half the toggle). safe-area is already
+// paid inside ChatSidebar, so it isn't added here.
 export function SidebarDrawer({
   children,
   banner = false,
@@ -27,22 +30,40 @@ export function SidebarDrawer({
   children: ReactNode;
   banner?: boolean;
 }) {
+  const [open, setOpen] = useState(false);
+
+  // The drawer is a portaled, fixed overlay — md:hidden only hides the trigger,
+  // so an open drawer would otherwise linger on top of the permanent <aside>
+  // after the viewport grows past md (768px, Tailwind's default). Close it on
+  // that crossover. (Controlled open state; Vaul still drives drag/scrim/Esc.)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const close = (e: MediaQueryListEvent) => {
+      if (e.matches) setOpen(false);
+    };
+    mq.addEventListener('change', close);
+    return () => mq.removeEventListener('change', close);
+  }, []);
+
   return (
-    <Sheet>
-      <SheetTrigger asChild>
+    <Drawer direction="left" open={open} onOpenChange={setOpen}>
+      <DrawerTrigger asChild>
         <Button variant="ghost" size="icon-sm" aria-label="Open menu">
           <Menu className="size-5" />
         </Button>
-      </SheetTrigger>
-      <SheetContent
-        side="left"
-        showCloseButton={false}
+      </DrawerTrigger>
+      <DrawerContent
         aria-describedby={undefined}
-        className={cn('w-72 gap-0 bg-card p-0', banner && 'pt-6')}
+        // w-64 matches the desktop <aside> exactly (overrides Vaul's default
+        // left width of w-3/4 — same data-variant so tailwind-merge dedupes it).
+        className={cn(
+          'bg-(--sidebar) data-[vaul-drawer-direction=left]:w-64',
+          banner && 'pt-4',
+        )}
       >
-        <SheetTitle className="sr-only">Menu</SheetTitle>
+        <DrawerTitle className="sr-only">Menu</DrawerTitle>
         {children}
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   );
 }

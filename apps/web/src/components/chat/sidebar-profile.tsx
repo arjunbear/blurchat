@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronsUpDown, LogOut, Sparkles, UserRound } from 'lucide-react';
+import { ChevronsUpDown, Fingerprint, LogOut, UserRound } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import {
   DropdownMenu,
@@ -56,7 +56,7 @@ export function SidebarProfile({ user }: { user: SidebarUser }) {
         {user.isAnonymous && (
           <DropdownMenuItem asChild>
             <Link href="/login?intent=claim">
-              <Sparkles className="size-4" />
+              <Fingerprint className="size-4" />
               Claim account
             </Link>
           </DropdownMenuItem>

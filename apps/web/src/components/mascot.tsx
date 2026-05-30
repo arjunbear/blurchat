@@ -139,6 +139,16 @@ export function Mascot({
     return navEntry?.type === 'reload';
   });
 
+  // Gate the entrance on the image actually being decoded, so a slow/late
+  // download can't start sliding in before there are pixels to show — it would
+  // pop in mid-animation. onLoad covers fresh downloads; the mount check covers
+  // an image already cached/complete before the handler attached (e.g. reload).
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    if (imgRef.current?.complete) setLoaded(true);
+  }, []);
+
   useEffect(() => {
     const shouldSkipEntrance =
       Boolean(reducedMotion) || (initialSeen && !isReload);
@@ -147,6 +157,10 @@ export function Mascot({
       animate(scope.current, REST, { duration: 0 });
       return;
     }
+
+    // Hold the mascot in its off-screen `initial` state until the image is
+    // decoded, so it only ever slides in once there's something to show.
+    if (!loaded) return;
 
     const startRotate = INITIAL_BY_DIRECTION[enterFrom].rotate;
     const overshoot = -startRotate * 0.4;
@@ -167,7 +181,7 @@ export function Mascot({
     };
     window.addEventListener('pageshow', onPageShow);
     return () => window.removeEventListener('pageshow', onPageShow);
-  }, [animate, scope, reducedMotion, enterFrom, initialSeen, isReload]);
+  }, [animate, scope, reducedMotion, enterFrom, initialSeen, isReload, loaded]);
 
   return (
     <motion.div
@@ -182,6 +196,7 @@ export function Mascot({
     >
       <motion.div ref={scope} initial={initial}>
         <Image
+          ref={imgRef}
           src={src}
           alt=""
           width={width}
@@ -189,6 +204,7 @@ export function Mascot({
           priority={priority}
           loading="eager"
           sizes={MASCOT_SIZES}
+          onLoad={() => setLoaded(true)}
           className={`object-contain ${imageClassName ?? ''}`}
         />
       </motion.div>
